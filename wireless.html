@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Ncd-Wireless',{
+        category: 'NCD',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value: ""},
+			port: {value: ""},
+			baudRate: {value: 9600, validate:RED.validators.number()}
+        },
+        inputs:1,
+        outputs:1,
+		icon: "serial.png",
+        label: function() {
+            return this.name||"NCD Wireless";
+        },
+		oneditprepare: function() {
+			var blist = [
+                {value:"115200",label:"115200",hasValue:false},
+                {value:"57600",label:"57600",hasValue:false},
+                {value:"38400",label:"38400",hasValue:false},
+                {value:"19200",label:"19200",hasValue:false},
+                {value:"9600",label:"9600",hasValue:false},
+                {value:"4800",label:"4800",hasValue:false},
+                {value:"2400",label:"2400",hasValue:false},
+                {value:"1200",label:"1200",hasValue:false},
+                {value:"600",label:"600",hasValue:false},
+                {value:"300",label:"300",hasValue:false}
+            ];
+
+            $("#node-input-baudRate").typedInput({
+                default: this.baudRate,
+                types:blist
+            });
+
+			try {
+                $("#node-input-modems").autocomplete( "destroy" );
+            } catch(err) {
+            }
+
+			$("#node-lookup-modems").click(function() {
+                $("#node-lookup-modems").addClass('disabled');
+                $.getJSON('ncd/wireless/modems/list',function(data) {
+                    $("#node-lookup-modems").removeClass('disabled');
+                    var ports = [];
+                    $.each(data, function(i, port) {
+                        ports.push(port);
+                    });
+                    $("#node-input-port").autocomplete({
+                        source:ports,
+                        minLength:0,
+                        close: function( event, ui ) {
+                            $("#node-input-port").autocomplete( "destroy" );
+                        }
+                    }).autocomplete("search","");
+                });
+            });
+		},
+		oneditsave: function() {
+            var mytype = $("#node-input-baudRate").typedInput('type');
+            $("#node-input-baudRate").typedInput('value',mytype);
+            this.serialbaud = $("#node-input-baudRate").typedInput('value');
+        }
+    });
+</script>
+<script type="text/x-red" data-template-name="Ncd-Wireless">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+	<div class="form-row">
+		<label for="node-input-port"><i class="fa fa-random"></i> Serial Port</label>
+		<input type="text" id="node-input-port" style="width:60%;" >
+		<a id="node-lookup-modems" class="btn"><i id="node-lookup-modems-icon" class="fa fa-search"></i></a>
+	</div>
+	<div class="form-row">
+		<label for="node-input-baudRate"><i class="icon-tag"></i> Baud Rate</label>
+		<input type="text" id="node-input-baudRate">
+	</div>
+</script>
