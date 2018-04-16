@@ -1,5 +1,4 @@
 const ncd = require("./index.js");
-var modems = {};
 module.exports = function(RED) {
 	function NcdWirelessNode(config) {
 		RED.nodes.createNode(this, config);

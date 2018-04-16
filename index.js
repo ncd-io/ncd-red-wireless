@@ -83,7 +83,7 @@ class NcdWireless{
 					};
 					this.temp = [];
 					this._emitter.emit('digi-in', msg);
-					if(msg.frame_type == 144){
+					if(msg.frame_type == 144 && pckt[15] == 0x7F){
 						var packet = this.processPacket(msg.original);
 						this._emitter.emit('sensor-packet', packet);
 					}
@@ -134,7 +134,7 @@ class NcdWireless{
 				readings.input_2 = msbLsb(d[11], d[12]);
 				break;
 			case 10:
-				readings.lux = d.slice(9, 12).reduce(msbLsb)/100;
+				readings.lux = d.slice(9, 12).reduce(msbLsb);
 				break;
 			case 10006:
 				for(var i=0;i++;i<4) readings[`channel_${i+1}`] = d.slice(9+(i*2), 10+(i*2)).reduce(msbLsb) / 100;
