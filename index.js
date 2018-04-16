@@ -83,7 +83,7 @@ class NcdWireless{
 					};
 					this.temp = [];
 					this._emitter.emit('digi-in', msg);
-					if(msg.frame_type == 144 && pckt[15] == 0x7F){
+					if(msg.frame_type == 144 && msg.original[15] == 0x7F){
 						var packet = this.processPacket(msg.original);
 						this._emitter.emit('sensor-packet', packet);
 					}
