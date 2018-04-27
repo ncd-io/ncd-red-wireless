@@ -20,11 +20,10 @@
     "license": "MIT",
     "node-red": {
         "nodes": {
-            "Ncd-Wireless": "wireless.js"
+            "ncd-wireless": "wireless.js"
         }
     },
     "dependencies": {
-        "promise-queue": "^2.2.5",
-        "serialport": "^6.0.0"
+        "ncd-red-comm": "^1.4.4"
     }
 }

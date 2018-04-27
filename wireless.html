@@ -1,18 +1,210 @@
 <script type="text/javascript">
-    RED.nodes.registerType('Ncd-Wireless',{
+    RED.nodes.registerType('ncd-gateway-node',{
         category: 'NCD',
         color: '#a6bbcf',
+		icon: "serial.png",
         defaults: {
-            name: {value: ""},
+			name: {value: ""},
+			connection: {value: "", type: "ncd-gateway-config"},
+		},
+		inputs: 1,
+		outputs: 1,
+		label: function() {
+            return this.name || "Wireless Gateway";
+        },
+		button: {
+            enabled: function() {
+                return !this.changed
+            },
+            onclick: function() {
+                if (this.changed) {
+                    return RED.notify(RED._("notification.warning", {message:RED._("notification.warnings.undeployedChanges")}),"warning");
+                }
+                var label = this.name;
+                if (label.length > 30) {
+                    label = label.substring(0,50)+"...";
+                }
+                label = label.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+                if (this.payloadType === "date") { label = this._("inject.timestamp"); }
+                if (this.payloadType === "none") { label = this._("inject.blank"); }
+                var node = this;
+                $.ajax({
+                    url: "ncd/wireless/gateway/config/"+this.id,
+                    type:"POST",
+                    success: function(resp) {
+                        RED.notify(node._("Modem "+resp,{label:label}),"success");
+                    },
+                    error: function(jqXHR,textStatus,errorThrown) {
+                        if (jqXHR.status == 404) {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.not-deployed")}),"error");
+                        } else if (jqXHR.status == 500) {
+                            RED.notify(node._("common.notification.error",{message:node._("inject.errors.failed")}),"error");
+                        } else if (jqXHR.status == 0) {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.no-response")}),"error");
+                        } else {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.unexpected",{status:jqXHR.status,message:textStatus})}),"error");
+                        }
+                    }
+                });
+            }
+        }
+	});
+</script>
+<script type="text/x-red" data-template-name="ncd-gateway-node">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+	<div class="form-row">
+		<label for="node-input-connection"><i class="icon-tag"></i> Serial Device</label>
+		<select id="node-input-connection"></select>
+	</div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ncd-wireless-node',{
+        category: 'NCD',
+        color: '#a6bbcf',
+		icon: "serial.png",
+        defaults: {
+			name: {value: ""},
+			connection: {value: "", type: "ncd-gateway-config"},
+			config_comm: {value: "", type: "ncd-gateway-config"},
+			addr: {value: ""},
+			sensor_type: {value: ""},
+			auto_config: {value: ""},
+			node_id: {value: 0, validate: RED.validators.number()},
+			delay: {value: 300, validate: RED.validators.number()},
+
+		},
+		inputs: 1,
+		outputs: 1,
+		label: function() {
+			if(this.name) return this.name;
+			if(this.addr) return this.addr.split(":").slice(4).join(':');
+			if(this.sensor_type){
+				var types = {
+					"1": "Temperature/Humidity",
+					"2": "2 Channel Push Notification",
+					"3": "ADC",
+					"4": "Thermocouple",
+					"5": "Gyro/Magneto/Temperature",
+					"6": "Temperature/Barometeric Pressure",
+					"8": "Vibration",
+					"9": "Proximity",
+					"10": "Light",
+					"23": "One Channel Counter",
+					"24": "Two Channel Counter",
+					"25": "7 Channel Push Notification",
+					"10006": "4-Channel 4-20 mA Input",
+					"10007": "4-Channel Current Monitor",
+					"10012": "2-Relay + 2-Input",
+				}
+	            return types[this.sensor_type];
+			}
+			return 'Wireless Device';
+        },
+		oneditprepare: function() {
+			try {
+                $("#node-config-input-addr").autocomplete( "destroy" );
+            } catch(err) {}
+
+			$("#node-lookup-sensors").click(function() {
+                $("#node-lookup-sensors").addClass('disabled');
+                $.getJSON('ncd/wireless/sensors/list/'+$('#node-input-connection').val(),function(data) {
+                    $("#node-lookup-sensors").removeClass('disabled');
+                    var macs = [];
+					var sensors = {};
+                    $.each(data, function(i, sensor) {
+                        macs.push(sensor.mac);
+						sensors[sensor.mac] = sensor;
+                    });
+                    $("#node-input-addr").autocomplete({
+                        source:macs,
+                        minLength:0,
+                        close: function( event, ui ) {
+                            $("#node-input-addr").autocomplete( "destroy" );
+                        },
+						select: function(e, ui){
+							$('#node-input-sensor_type option[value="'+sensors[ui.item.value].type+'"]').prop('selected', true);
+							$('#node-input-node_id').val(sensors[ui.item.value].nodeId);
+						}
+                    }).autocomplete("search","");
+                });
+            });
+		},
+	});
+</script>
+<script type="text/x-red" data-template-name="ncd-wireless-node">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+	<div class="form-row">
+		<label for="node-input-connection"><i class="icon-tag"></i> Serial Device</label>
+		<select id="node-input-connection"></select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-config_comm"><i class="icon-tag"></i> Serial Device for Config</label>
+		<select id="node-input-config_comm"></select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-addr"><i class="fa fa-random"></i> Mac Address</label>
+		<input type="text" id="node-input-addr" style="width:60%;" >
+		<a id="node-lookup-sensors" class="btn"><i id="node-lookup-sensors-icon" class="fa fa-search"></i></a>
+	</div>
+	<div class="form-row">
+		<label for="node-input-sensor_type"><i class="icon-tag"></i> Sensor Type</label>
+		<select id="node-input-sensor_type">
+			<option value="1">Temperature/Humidity</option>
+			<option value="2">2 Channel Push Notification</option>
+			<option value="3">ADC</option>
+			<option value="4">Thermocouple</option>
+			<option value="5">Gyro/Magneto/Temperature</option>
+			<option value="6">Temperature/Barometeric Pressure</option>
+			<option value="8">Vibration</option>
+			<option value="9">Proximity</option>
+			<option value="10">Light</option>
+			<option value="23">One Channel Counter</option>
+			<option value="24">Two Channel Counter</option>
+			<option value="25">7 Channel Push Notification</option>
+			<option value="10006">4-Channel 4-20 mA Input</option>
+			<option value="10007">4-Channel Current Monitor</option>
+			<option value="10012">2-Relay + 2-Input</option>
+		</select>
+	</div>
+	<div class="collapsible collapsed">
+		<h3>Advanced</h3>
+		<div>
+			<div class="form-row">
+				<label for="node-input-auto_config"><i class="icon-tag"></i> Auto Config</label>
+				<input type="checkbox" id="node-input-auto_config" value="1">
+			</div>
+			<div class="form-row">
+				<label for="node-input-node_id"><i class="icon-tag"></i> Node ID</label>
+				<input type="text" id="node-input-node_id">
+			</div>
+			<div class="form-row">
+				<label for="node-input-delay"><i class="icon-tag"></i> Delay</label>
+				<input type="text" id="node-input-delay">
+			</div>
+		</div>
+	</div>
+</script>
+
+
+<script type="text/javascript">
+	RED.nodes.registerType('ncd-gateway-config', {
+		category: 'config',
+		defaults: {
+			name: {value: ""},
 			port: {value: ""},
 			baudRate: {value: 9600, validate:RED.validators.number()}
-        },
-        inputs:1,
-        outputs:1,
-		icon: "serial.png",
-        label: function() {
-            return this.name||"NCD Wireless";
-        },
+		},
+		label: function(){
+			if(this.name) return this.name;
+			return this.port+' ('+this.baudRate+')';
+		},
 		oneditprepare: function() {
 			var blist = [
                 {value:"115200",label:"115200",hasValue:false},
@@ -27,15 +219,14 @@
                 {value:"300",label:"300",hasValue:false}
             ];
 
-            $("#node-input-baudRate").typedInput({
+            $("#node-config-input-baudRate").typedInput({
                 default: this.baudRate,
                 types:blist
             });
 
 			try {
-                $("#node-input-modems").autocomplete( "destroy" );
-            } catch(err) {
-            }
+                $("#node-config-input-port").autocomplete( "destroy" );
+            } catch(err) {}
 
 			$("#node-lookup-modems").click(function() {
                 $("#node-lookup-modems").addClass('disabled');
@@ -45,7 +236,7 @@
                     $.each(data, function(i, port) {
                         ports.push(port);
                     });
-                    $("#node-input-port").autocomplete({
+                    $("#node-config-input-port").autocomplete({
                         source:ports,
                         minLength:0,
                         close: function( event, ui ) {
@@ -56,24 +247,24 @@
             });
 		},
 		oneditsave: function() {
-            var mytype = $("#node-input-baudRate").typedInput('type');
-            $("#node-input-baudRate").typedInput('value',mytype);
-            this.serialbaud = $("#node-input-baudRate").typedInput('value');
+            var mytype = $("#node-config-input-baudRate").typedInput('type');
+            $("#node-config-input-baudRate").typedInput('value',mytype);
+            this.serialbaud = $("#node-config-input-baudRate").typedInput('value');
         }
-    });
+	});
 </script>
-<script type="text/x-red" data-template-name="Ncd-Wireless">
+<script type="text/x-red" data-template-name="ncd-gateway-config">
 	<div class="form-row">
-		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
-		<input type="text" id="node-input-name" placeholder="Name">
+		<label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-config-input-name" placeholder="Name">
 	</div>
 	<div class="form-row">
-		<label for="node-input-port"><i class="fa fa-random"></i> Serial Port</label>
-		<input type="text" id="node-input-port" style="width:60%;" >
+		<label for="node-config-input-port"><i class="fa fa-random"></i> Serial Port</label>
+		<input type="text" id="node-config-input-port" style="width:60%;" >
 		<a id="node-lookup-modems" class="btn"><i id="node-lookup-modems-icon" class="fa fa-search"></i></a>
 	</div>
 	<div class="form-row">
-		<label for="node-input-baudRate"><i class="icon-tag"></i> Baud Rate</label>
-		<input type="text" id="node-input-baudRate">
+		<label for="node-config-input-baudRate"><i class="icon-tag"></i> Baud Rate</label>
+		<input type="text" id="node-config-input-baudRate">
 	</div>
 </script>
