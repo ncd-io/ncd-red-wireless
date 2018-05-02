@@ -14,8 +14,8 @@ gateway._emitter.once('sensor_mode', (sensor) => {
 		//modem.send.remote_at_command(mac2bytes(sensor.mac), 'ID').then(console.log).catch(console.log);
 		var broadcast = "00:00:00:00:00:00:FF:FF"
 		setTimeout(() => {
-			 gateway.config_get_pan_id(sensor.mac).then(console.log).catch(console.log);
-			// gateway.config_set_pan_id(sensor.mac, 0x7BCE).then(console.log).catch(console.log);
+			//  gateway.config_get_pan_id(sensor.mac).then(console.log).catch(console.log);
+			 //gateway.config_set_pan_id(sensor.mac, 0x7FFF).then(console.log).catch(console.log);
 		}, 500);
 	}
 });
