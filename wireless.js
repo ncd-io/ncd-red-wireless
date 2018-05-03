@@ -11,9 +11,9 @@ module.exports = function(RED) {
         this.port = config.port;
 		this.baudRate = parseInt(config.baudRate);
 		this.sensor_pool = [];
-		if(typeof gateway_pool[this.bus] != 'undefined'){
-			if(this.baudRate != gateway_pool[this.bus].digi.serial.baudRate){
-				gateway_pool[this.bus].digi.serial.update({baudRate: this.baudRate}).then().catch(console.log);
+		if(typeof gateway_pool[this.port] != 'undefined'){
+			if(this.baudRate != gateway_pool[this.port].digi.serial.baudRate){
+				gateway_pool[this.port].digi.serial.update({baudRate: this.baudRate}).then().catch(console.log);
 			}
 		}else{
 			var serial = new comms.NcdSerial(this.port, this.baudRate);
@@ -21,9 +21,9 @@ module.exports = function(RED) {
 				console.log(err);
 			})
 			var modem = new wireless.Modem(serial);
-			gateway_pool[this.bus] = new wireless.Gateway(modem);
+			gateway_pool[this.port] = new wireless.Gateway(modem);
 		}
-		this.gateway = gateway_pool[this.bus];
+		this.gateway = gateway_pool[this.port];
 		var node = this;
 		this.on('close', () => {
 			node.gateway._emitter.removeAllListeners('sensor_data');
@@ -36,6 +36,7 @@ module.exports = function(RED) {
 		node.check_mode = function(cb){
 			node.gateway.digi.send.at_command("ID").then((res) => {
 				var pan_id = (res.data[0] << 8) | res.data[1];
+				console.log(pan_id);
 				if(pan_id == 0x7BCD && parseInt(config.pan_id, 16) != 0x7BCD){
 					node.is_config = 1;
 				}else{
@@ -54,6 +55,7 @@ module.exports = function(RED) {
 			if(!mode && node.gateway.pan_id != pan_id){
 				node.gateway.digi.send.at_command("ID", [pan_id >> 8, pan_id & 255]).then((res) => {
 					node.gateway.pan_id = pan_id;
+					console.log(pan_id);
 				}).catch((err) => {
 					console.log(err);
 				});
@@ -245,7 +247,7 @@ module.exports = function(RED) {
 				});
 			});
 		}else{
-			res.json({pan_id: gateway_pool[this.bus].pan_id.toString(16)});
+			res.json({pan_id: gateway_pool[port].pan_id.toString(16)});
 		}
 	});
 	RED.httpAdmin.get("/ncd/wireless/sensors/list/:id", RED.auth.needsPermission('serial.read'), function(req,res) {
