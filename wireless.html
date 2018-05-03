@@ -14,7 +14,7 @@
         },
 		button: {
             enabled: function() {
-                return !this.changed
+                return true;
             },
             onclick: function() {
                 if (this.changed) {
@@ -47,7 +47,7 @@
                     }
                 });
             }
-        }
+        },
 	});
 </script>
 <script type="text/x-red" data-template-name="ncd-gateway-node">
@@ -59,9 +59,19 @@
 		<label for="node-input-connection"><i class="icon-tag"></i> Serial Device</label>
 		<select id="node-input-connection"></select>
 	</div>
+
 </script>
 
 <script type="text/javascript">
+	NCD_validators = {
+		number_range: function(l, h, base){
+			if(!base) base = 10;
+			return function(v){
+				var int = parseInt(v, 16);
+				return int >= l && int <= h;
+			}
+		}
+	}
     RED.nodes.registerType('ncd-wireless-node',{
         category: 'NCD',
         color: '#a6bbcf',
@@ -69,13 +79,17 @@
         defaults: {
 			name: {value: ""},
 			connection: {value: "", type: "ncd-gateway-config"},
-			config_comm: {value: "", type: "ncd-gateway-config"},
+			config_comm: {value: "", type: "ncd-gateway-config", required: false},
 			addr: {value: ""},
 			sensor_type: {value: ""},
 			auto_config: {value: ""},
-			node_id: {value: 0, validate: RED.validators.number()},
-			delay: {value: 300, validate: RED.validators.number()},
+			node_id: {value: 0, validate: NCD_validators.number_range(0, 255)},//0 - 255
+			delay: {value: 300, validate: NCD_validators.number_range(1, 16777215)},//1 - 16777215
 
+			destination: {value: '0000FFFF', validate: NCD_validators.number_range(0, 0xFFFFFFFF, 16)},//(0 - 0xFFFFFFFF)
+			power: {value: 4},//(0 - 4)
+			retries: {value: 10, validate: NCD_validators.number_range(0, 16)},//(0 - 16)
+			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)},//(0 - 0x7FFF)
 		},
 		inputs: 1,
 		outputs: 1,
@@ -188,18 +202,49 @@
 				<label for="node-input-delay"><i class="icon-tag"></i> Delay</label>
 				<input type="text" id="node-input-delay">
 			</div>
+			<div class="form-row">
+				<label for="node-input-destination"><i class="icon-tag"></i> Destination (0000FFFF for Broadcast Mode)</label>
+				0x<input type="text" id="node-input-destination" value="0000FFFF">
+			</div>
+			<div class="form-row">
+				<label for="node-input-power"><i class="icon-tag"></i> Power</label>
+				<select id="node-input-power">
+					<option value="0">+7 dBm (5 mW)</option>
+					<option value="1">+15 dBm (32 mW)</option>
+					<option value="2">+18 dBm (63 mW)</option>
+					<option value="3">+21 dBm (125 mW)</option>
+					<option selected="selected" value="4">+24 dBm (250 mW)</option>
+				</select>
+			</div>
+			<div class="form-row">
+				<label for="node-input-retries"><i class="icon-tag"></i> Retries (0-16)</label>
+				<input type="text" id="node-input-retries">
+			</div>
+			<div class="form-row">
+				<label for="node-input-pan_id"><i class="icon-tag"></i> Network ID (0 - 0x7FFF)</label>
+				0x<input type="text" id="node-input-pan_id" value="7FFF">
+			</div>
 		</div>
 	</div>
 </script>
 
-
 <script type="text/javascript">
+	NCD_validators = {
+		number_range: function(l, h, base){
+			if(!base) base = 10;
+			return function(v){
+				var int = parseInt(v, 16);
+				return int >= l && int <= h;
+			}
+		}
+	}
 	RED.nodes.registerType('ncd-gateway-config', {
 		category: 'config',
 		defaults: {
 			name: {value: ""},
 			port: {value: ""},
-			baudRate: {value: 9600, validate:RED.validators.number()}
+			baudRate: {value: 9600, validate:RED.validators.number()},
+			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)}
 		},
 		label: function(){
 			if(this.name) return this.name;
@@ -245,6 +290,22 @@
                     }).autocomplete("search","");
                 });
             });
+
+			$('#node-config-input-port').on('autocompleteselect', function(e, ui){
+				var mytype = $("#node-config-input-baudRate").typedInput('type');
+	            $("#node-config-input-baudRate").typedInput('value',mytype);
+	            var baudRate = $("#node-config-input-baudRate").typedInput('value');
+				var port = ui.item.value;
+				$.ajax({
+                    url: "ncd/wireless/modem/info/"+encodeURIComponent(port)+'/'+baudRate,
+                    type: "GET",
+                    success: function(resp) {
+						if(resp && typeof resp.pan_id != 'undefined'){
+							$('#node-config-input-pan_id').val(resp.pan_id);
+						}
+                    },
+				});
+			});
 		},
 		oneditsave: function() {
             var mytype = $("#node-config-input-baudRate").typedInput('type');
@@ -266,5 +327,9 @@
 	<div class="form-row">
 		<label for="node-config-input-baudRate"><i class="icon-tag"></i> Baud Rate</label>
 		<input type="text" id="node-config-input-baudRate">
+	</div>
+	<div class="form-row">
+		<label for="node-config-input-pan_id"><i class="icon-tag"></i> Network ID (0 - 0x7FFF)</label>
+		0x<input type="text" id="node-config-input-pan_id" value="7FFF">
 	</div>
 </script>
