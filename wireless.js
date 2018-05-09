@@ -36,7 +36,6 @@ module.exports = function(RED) {
 		node.check_mode = function(cb){
 			node.gateway.digi.send.at_command("ID").then((res) => {
 				var pan_id = (res.data[0] << 8) | res.data[1];
-				console.log(pan_id);
 				if(pan_id == 0x7BCD && parseInt(config.pan_id, 16) != 0x7BCD){
 					node.is_config = 1;
 				}else{
@@ -55,7 +54,6 @@ module.exports = function(RED) {
 			if(!mode && node.gateway.pan_id != pan_id){
 				node.gateway.digi.send.at_command("ID", [pan_id >> 8, pan_id & 255]).then((res) => {
 					node.gateway.pan_id = pan_id;
-					console.log(pan_id);
 				}).catch((err) => {
 					console.log(err);
 				});
