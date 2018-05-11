@@ -125,6 +125,7 @@
 
 			$("#node-lookup-sensors").click(function() {
                 $("#node-lookup-sensors").addClass('disabled');
+				var connection = RED.nodes.node($('#node-input-connection').val())
                 $.getJSON('ncd/wireless/sensors/list/'+$('#node-input-connection').val(),function(data) {
                     $("#node-lookup-sensors").removeClass('disabled');
                     var macs = [];
