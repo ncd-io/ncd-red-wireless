@@ -29,10 +29,10 @@ module.exports = function(RED) {
 			node.gateway._emitter.removeAllListeners('sensor_data');
 			node.gateway.digi.serial.close();
 		});
-		node.gateway.digi.send.at_command("SL").then((res) => {
-			node.gateway.addr = res.data.reduce((m,l) => (m<<8)+l).toString(16);
-		}).catch((err) => {
-		});
+		// node.gateway.digi.send.at_command("SL").then((res) => {
+		// 	node.gateway.addr = res.data.reduce((m,l) => (m<<8)+l).toString(16);
+		// }).catch((err) => {
+		// });
 		node.check_mode = function(cb){
 			node.gateway.digi.send.at_command("ID").then((res) => {
 				var pan_id = (res.data[0] << 8) | res.data[1];
@@ -127,7 +127,7 @@ module.exports = function(RED) {
 			node.queue.add(() => {
 				node.status(modes.PGM_NOW);
 				var dest = config.destination;
-				if(!dest) dest = node.gateway.addr;
+				//if(!dest) dest = node.gateway.addr;
 				node.config_gateway.config_set_destination(mac, parseInt(dest, 16));
 			});
 			node.queue.add(() => {
@@ -260,10 +260,10 @@ module.exports = function(RED) {
 				res.json(sensors);
             } catch(err) {
                 res.sendStatus(500);
-                node.error(RED._("inject.failed",{error:err.toString()}));
+                node.error(RED._("sensor_list.failed",{error:err.toString()}));
             }
         } else {
-            res.sendStatus(404);
+            res.json({});
         }
 	});
 
