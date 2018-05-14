@@ -1,6 +1,6 @@
 {
     "name": "ncd-red-wireless",
-    "version": "0.1.1",
+	    "version": "1.1.7",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -20,11 +20,10 @@
     "license": "MIT",
     "node-red": {
         "nodes": {
-            "Ncd-Wireless": "wireless.js"
+            "ncd-wireless": "wireless.js"
         }
     },
     "dependencies": {
-        "promise-queue": "^2.2.5",
-        "serialport": "^6.0.0"
+        "ncd-red-comm": "^1.5.0"
     }
 }
