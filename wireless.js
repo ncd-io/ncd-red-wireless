@@ -109,11 +109,11 @@ module.exports = function(RED) {
 			this.config_gateway.on(event, cb);
 		}
 		function _delay(time){
-			node.queue.add(() => {
+			//node.queue.add(() => {
 				return new Promise((fulfill, reject) => {
 					setTimeout(fulfill, time);
 				});
-			});
+			//});
 		}
 		function simpleWrapper(p){
 			return new Promise((fulfill, reject) => {
@@ -124,36 +124,24 @@ module.exports = function(RED) {
 			});
 		}
 		function _config(mac){
-			_delay(1000);
-			node.queue.add(() => {
+			//_delay(1000);
+			setTimeout(() => {
 				node.status(modes.PGM_NOW);
 				var dest = config.destination;
-				//if(!dest) dest = node.gateway.addr;
-				return simpleWrapper(node.config_gateway.config_set_destination(mac, parseInt(dest, 16)));
-			});
-			_delay(100);
-			node.queue.add(() => {
-				return simpleWrapper(node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)));
-			});
-			_delay(100);
-			node.queue.add(() => {
-				return simpleWrapper(node.config_gateway.config_set_power(mac, parseInt(config.power)));
-			});
-			_delay(100);
-			node.queue.add(() => {
-				return simpleWrapper(node.config_gateway.config_set_retries(mac, parseInt(config.retries)));
-			});
-			_delay(100);
-			node.queue.add(() => {
-				return simpleWrapper(node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16)));
-			});
-			_delay(100);
-			node.queue.add(() => {
-				return new Promise((fulfill, reject) => {
+				Promise.all([
+					node.config_gateway.config_set_destination(mac, parseInt(dest, 16)),
+					node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
+					node.config_gateway.config_set_power(mac, parseInt(config.power)),
+					node.config_gateway.config_set_retries(mac, parseInt(config.retries)),
+					node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
+				]).then(() => {
+
+				}).catch((err) => {
+					console.log(err);
+				}).then(() => {
 					node.status(modes.READY);
-					fulfill();
 				});
-			});
+			}, 1000);
 		}
 		if(config.addr){
 			RED.nodes.getNode(config.connection).sensor_pool.push(config.addr);
