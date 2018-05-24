@@ -3,11 +3,12 @@
         category: 'NCD',
         color: '#a6bbcf',
 		icon: "serial.png",
+		paletteLabel: "Wireless Gateway",
         defaults: {
 			name: {value: ""},
 			connection: {value: "", type: "ncd-gateway-config"},
 		},
-		inputs: 1,
+		inputs: 0,
 		outputs: 1,
 		label: function() {
             return this.name || "Wireless Gateway";
@@ -59,8 +60,44 @@
 		<label for="node-input-connection"><i class="icon-tag"></i> Serial Device</label>
 		<select id="node-input-connection"></select>
 	</div>
-
 </script>
+
+<script type="text/x-red" data-help-name="ncd-gateway-node">
+    <h3>Gateway Node</h3>
+	<p>This node is primarily useful for debugging and configuring sensors. This node is equipped with a button on the flow that switches the modem between configuration and listening mode.</p>
+	<h3>Output</h3>
+	<p>Any time sensor data is received from any sensor on the network, this node will output a message containing all pertinant information as in the example below.</p>
+	<pre>
+  msg = {
+    topic: "sensor_data",
+    payload: {
+      nodeId: 0,
+      firmware: 3,
+      battery: 3.2940600000000004,
+      counter: 37,
+      sensor_type: 1,
+      sensor_data: {
+        humidity: 45.51,
+        temperature: 23.91,
+      },
+      type: "sensor_data",
+      addr: "00:13:a2:00:41:07:18:81",
+      original: {
+        mac: "00:13:a2:00:41:07:18:81",
+        receive_options: {
+          ack: 0,
+          broadcast: 0,
+          type: ""
+        }
+      },
+      data: [127,0,3,3,255,37,0,1,0,17,199,9,87],
+      type: "receive_packet"
+    },
+    _msgid: "391caba.5a19454"
+  }
+	</pre>
+</script>
+
 
 <script type="text/javascript">
 	NCD_validators = {
@@ -76,6 +113,7 @@
         category: 'NCD',
         color: '#a6bbcf',
 		icon: "serial.png",
+		paletteLabel: "Wireless Node",
         defaults: {
 			name: {value: ""},
 			connection: {value: "", type: "ncd-gateway-config"},
@@ -91,7 +129,7 @@
 			retries: {value: 10, validate: NCD_validators.number_range(0, 16)},//(0 - 16)
 			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)},//(0 - 0x7FFF)
 		},
-		inputs: 1,
+		inputs: 0,
 		outputs: 1,
 		label: function() {
 			if(this.name) return this.name;
@@ -227,6 +265,54 @@
 			</div>
 		</div>
 	</div>
+</script>
+
+<script type="text/x-red" data-help-name="ncd-wireless-node">
+    <h3>Wireless Node</h3>
+	<p>This node is used to filter sensor data coming from a modem. It can filter by mac address, or sensor type, and can be used to configure wireless devices automatically when they enter configuration mode.</p>
+	<h4>Serial Devices</h4>
+	<p>The Serial Device field refers to the modem that will be recieving the packets from the device. The Serial Device for Config field refers to a modem that is always set to the config network ID (0x7BCD), this is the recommended setup as it allows you to configure nodes without missing potentially important sensor data, however, the config button on the Wireless Gateway node may be used if a single modem will be acting as both the listener, and config endpoints, making the second selection optional.</p>
+	<h4>Mac Address</h4>
+	<p>The mac address of the device you wish to listen for, if you have already deployed a flow using the connected serial device, you may use the magnifying glass icon to pull a list of mac addresses that have already checked in, otherwise you can enter the mac address manually. </b>Optional</b></p>
+	<h4>Sensor Type</h4>
+	<p>If you wish to capture all data from sensors that match a particular type, you can use this instead of the mac address. </b>Optional</b></p>
+	<h4>Advanced/Auto config</h4>
+	<p>If the Auto Config checkbox is active, the settings below it will propogate to the sensor when the modem detects that it has entered configuration mode. You can find more information about these settings on the appropriate product manual</p>
+	<h4>Output</h4>
+	<p>This node will output detailed information about incoming sensor data, and the device identity and status including. The payload will contain an object containing sensor data, an example can be seen below:</p>
+	<pre>
+  msg = {
+    topic: "sensor_data",
+	payload: {
+      humidity: 45.51,
+      temperature: 23.91,
+	}
+    data: {
+      nodeId: 0,
+      firmware: 3,
+      battery: 3.2940600000000004,
+      counter: 37,
+      sensor_type: 1,
+      sensor_data: {
+        humidity: 45.51,
+        temperature: 23.91,
+      },
+      type: "sensor_data",
+      addr: "00:13:a2:00:41:07:18:81",
+      original: {
+        mac: "00:13:a2:00:41:07:18:81",
+        receive_options: {
+          ack: 0,
+          broadcast: 0,
+          type: ""
+        }
+      },
+      data: [127,0,3,3,255,37,0,1,0,17,199,9,87],
+      type: "receive_packet"
+    },
+    _msgid: "391caba.5a19454"
+  }
+	</pre>
 </script>
 
 <script type="text/javascript">
