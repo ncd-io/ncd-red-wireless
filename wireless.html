@@ -113,7 +113,7 @@
         category: 'NCD',
         color: '#a6bbcf',
 		icon: "serial.png",
-		paletteLabel: "Wireless Node",
+		paletteLabel: "Wireless Device",
         defaults: {
 			name: {value: ""},
 			connection: {value: "", type: "ncd-gateway-config"},
@@ -330,7 +330,7 @@
 		defaults: {
 			name: {value: ""},
 			port: {value: ""},
-			baudRate: {value: 9600, validate:RED.validators.number()},
+			baudRate: {value: 115200, validate:RED.validators.number()},
 			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)}
 		},
 		label: function(){
