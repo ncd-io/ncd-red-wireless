@@ -11,13 +11,14 @@ module.exports = function(RED) {
         this.port = config.port;
 		this.baudRate = parseInt(config.baudRate);
 		this.sensor_pool = [];
-
-		var serial = new comms.NcdSerial(this.port, this.baudRate);
-		serial.on('error', (err) => {
-			console.log(err);
-		})
-		var modem = new wireless.Modem(serial);
-		gateway_pool[this.port] = new wireless.Gateway(modem);
+		if(typeof gateway_pool[this.port] == 'undefined'){
+			var serial = new comms.NcdSerial(this.port, this.baudRate);
+			serial.on('error', (err) => {
+				console.log(err);
+			})
+			var modem = new wireless.Modem(serial);
+			gateway_pool[this.port] = new wireless.Gateway(modem);
+		}
 		this.gateway = gateway_pool[this.port];
 
 		var node = this;
@@ -38,13 +39,12 @@ module.exports = function(RED) {
 				}
 				if(cb) cb(node.is_config);
 			}).catch((err) => {
-				console.log('could not get id');
 				console.log(err);
 				node.is_config = 2;
 				if(cb) cb(node.is_config);
 			});
 		}
-		serial.on('ready', () => {
+		node.gateway.digi.serial.on('ready', () => {
 			node.check_mode((mode) => {
 				var pan_id = parseInt(config.pan_id, 16);
 				if(!mode && node.gateway.pan_id != pan_id){
