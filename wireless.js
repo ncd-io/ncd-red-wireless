@@ -44,16 +44,17 @@ module.exports = function(RED) {
 				if(cb) cb(node.is_config);
 			});
 		}
-
-		node.check_mode((mode) => {
-			var pan_id = parseInt(config.pan_id, 16);
-			if(!mode && node.gateway.pan_id != pan_id){
-				node.gateway.digi.send.at_command("ID", [pan_id >> 8, pan_id & 255]).then((res) => {
-					node.gateway.pan_id = pan_id;
-				}).catch((err) => {
-					console.log(err);
-				});
-			}
+		serial.on('ready', () => {
+			node.check_mode((mode) => {
+				var pan_id = parseInt(config.pan_id, 16);
+				if(!mode && node.gateway.pan_id != pan_id){
+					node.gateway.digi.send.at_command("ID", [pan_id >> 8, pan_id & 255]).then((res) => {
+						node.gateway.pan_id = pan_id;
+					}).catch((err) => {
+						console.log(err);
+					});
+				}
+			});
 		});
 	}
 
