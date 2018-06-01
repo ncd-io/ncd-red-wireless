@@ -103,11 +103,23 @@
 	NCD_validators = {
 		number_range: function(l, h, base){
 			if(!base) base = 10;
-			return function(v){
-				var int = parseInt(v, 16);
-				return int >= l && int <= h;
+			if(base == 'decimal'){
+				return function(v){
+					var n = parseFloat(v);
+					return n >= l && n <= h;
+				}
+			}else{
+				return function(v){
+					var int = parseInt(v, 16);
+					return int >= l && int <= h;
+				}
 			}
 		}
+	}
+	var ncd_field_states = function(){
+		var type = $('#node-input-sensor_type').val();
+		$('.ncd-dependent').hide();
+		$('.ncd-dependent[data-sensor-'+type+']').show();
 	}
     RED.nodes.registerType('ncd-wireless-node',{
         category: 'NCD',
@@ -128,6 +140,23 @@
 			power: {value: 4},//(0 - 4)
 			retries: {value: 10, validate: NCD_validators.number_range(0, 16)},//(0 - 16)
 			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)},//(0 - 0x7FFF)
+
+			change_enabled: {value: ""},
+			change_pr: {value: "0", validate: NCD_validators.number_range(0, 255)},
+			change_interval: {value: "0", validate: NCD_validators.number_range(0, 16712198)},
+
+			cm_calibration: {value: "0", validate: NCD_validators.number_range(0, 655.35, 'decimal')},
+
+			bp_altitude: {value: "0", validate: NCD_validators.number_range(0, 65535)},
+			bp_pressure: {value: "0", validate: NCD_validators.number_range(0, 14000)},
+
+			bp_temp_prec: {value: "0"},
+			bp_press_prec: {value: "0"},
+
+			amgt_accel: {value: "0"},
+			amgt_mag: {value: "0"},
+			amgt_gyro: {value: "0"},
+
 		},
 		inputs: 0,
 		outputs: 1,
@@ -145,6 +174,7 @@
 					"8": "Vibration",
 					"9": "Proximity",
 					"10": "Light",
+					"13": "Current Monitor",
 					"23": "One Channel Counter",
 					"24": "Two Channel Counter",
 					"25": "7 Channel Push Notification",
@@ -160,7 +190,8 @@
 			try {
                 $("#node-config-input-addr").autocomplete( "destroy" );
             } catch(err) {}
-
+			$('.ncd-dependent[sensor_type]').hide();
+			$('#node-input-sensor_type').change(ncd_field_states);
 			$("#node-lookup-sensors").click(function() {
                 $("#node-lookup-sensors").addClass('disabled');
 				var connection = RED.nodes.node($('#node-input-connection').val())
@@ -180,6 +211,7 @@
                         },
 						select: function(e, ui){
 							$('#node-input-sensor_type option[value="'+sensors[ui.item.value].type+'"]').prop('selected', true);
+							$('#node-input-sensor_type').change();
 							$('#node-input-node_id').val(sensors[ui.item.value].nodeId);
 						}
                     }).autocomplete("search","");
@@ -213,7 +245,7 @@
 			<option value="2">2 Channel Push Notification</option>
 			<option value="3">ADC</option>
 			<option value="4">Thermocouple</option>
-			<option value="5">Gyro/Magneto/Temperature</option>
+			<option value="5">Accel/Gyro/Magneto/Temperature</option>
 			<option value="6">Temperature/Barometeric Pressure</option>
 			<option value="8">Vibration</option>
 			<option value="9">Proximity</option>
@@ -263,6 +295,87 @@
 			<div class="form-row">
 				<label for="node-input-pan_id"><i class="icon-tag"></i> Network ID (0 - 0x7FFF)</label>
 				0x<input type="text" id="node-input-pan_id" value="7FFF">
+			</div>
+			<div class="ncd-dependent" data-sensor-13 data-sensor-10 data-sensor-3>
+				<div class="form-row">
+					<label for="node-input-change_enabled"><i class="icon-tag"></i> Enable Percentage Change Detection</label>
+					<input type="checkbox" id="node-input-change_enabled" value="1">
+				</div>
+				<div class="form-row">
+					<label for="node-input-change_pr"><i class="icon-tag"></i> Percentage Change Threshold (0-255)</label>
+					<input type="text" id="node-input-change_pr">
+				</div>
+				<div class="form-row">
+					<label for="node-input-change_interval"><i class="icon-tag"></i> Percentage Change Interval (seconds)</label>
+					<input type="text" id="node-input-change_interval">
+				</div>
+			</div>
+			<!-- Current Monitor Options -->
+			<div class="ncd-dependent" data-sensor-13>
+				<div class="form-row">
+					<label for="node-input-cm_calibration"><i class="icon-tag"></i> Calibration Option (0 - 655.35)</label>
+					<input type="text" id="node-input-cm_calibration">
+				</div>
+			</div>
+			<!-- Barometric Pressure Options -->
+			<div class="ncd-dependent" data-sensor-6>
+				<div class="form-row">
+					<label for="node-input-bp_altitude"><i class="icon-tag"></i> Baseline Altitude (0 - 65535 meters)</label>
+					<input type="text" id="node-input-bp_altitude">
+				</div>
+				<div class="form-row">
+					<label for="node-input-bp_pressure"><i class="icon-tag"></i> Baseline Pressure (0 - 14000 mbar)</label>
+					<input type="text" id="node-input-bp_pressure">
+				</div>
+				<div class="form-row">
+					<label for="node-input-bp_temp_prec"><i class="icon-tag"></i> Temperature Precision</label>
+					<select id="node-input-bp_temp_prec">
+						<option selected="selected" value="0">0.012</option>
+						<option value="2">0.008</option>
+						<option value="4">0.005</option>
+						<option value="6">0.003</option>
+						<option value="8">0.002</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-bp_press_prec"><i class="icon-tag"></i> Pressure Precision</label>
+					<select id="node-input-bp_press_prec">
+						<option selected="selected" value="0">0.065</option>
+						<option value="2">0.042</option>
+						<option value="4">0.027</option>
+						<option value="6">0.018</option>
+						<option value="8">0.012</option>
+					</select>
+				</div>
+			</div>
+			<!-- Magneto/Gyro/Accel/Temp Options -->
+			<div class="ncd-dependent" data-sensor-5>
+				<div class="form-row">
+					<label for="node-input-amgt_accel"><i class="icon-tag"></i> Acceleration Range</label>
+					<select id="node-input-amgt_accel">
+						<option selected="selected" value="0">±2g</option>
+						<option value="1">±4g</option>
+						<option value="3">±8g</option>
+						<option value="4">±16g</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-amgt_mag"><i class="icon-tag"></i> Magnetometer Gain</label>
+					<select id="node-input-amgt_mag">
+						<option selected="selected" value="0">±4 gauss</option>
+						<option value="1">±8 gauss</option>
+						<option value="2">±12 gauss</option>
+						<option value="3">±16 gauss</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-amgt_gyro"><i class="icon-tag"></i> Gyroscope Scale</label>
+					<select id="node-input-amgt_gyro">
+						<option selected="selected" value="0">±245dps</option>
+						<option value="1">±500dps</option>
+						<option value="2">±2000dps</option>
+					</select>
+				</div>
 			</div>
 		</div>
 	</div>

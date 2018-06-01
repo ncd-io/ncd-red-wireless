@@ -10,7 +10,9 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this,config);
         this.port = config.port;
 		this.baudRate = parseInt(config.baudRate);
+
 		this.sensor_pool = [];
+
 		if(typeof gateway_pool[this.port] == 'undefined'){
 			var serial = new comms.NcdSerial(this.port, this.baudRate);
 			serial.on('error', (err) => {
@@ -124,18 +126,41 @@ module.exports = function(RED) {
 				})
 			});
 		}
-		function _config(mac){
+		function _config(sensor){
+			var mac = sensor.mac;
 			//_delay(1000);
 			setTimeout(() => {
 				node.status(modes.PGM_NOW);
 				var dest = config.destination;
-				Promise.all([
+				var promises = [
 					node.config_gateway.config_set_destination(mac, parseInt(dest, 16)),
 					node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
 					node.config_gateway.config_set_power(mac, parseInt(config.power)),
 					node.config_gateway.config_set_retries(mac, parseInt(config.retries)),
 					node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
-				]).then(() => {
+				];
+				var change_detection = [13, 10, 3];
+				if(change_detection.indexOf(sensor.type) > -1){
+					promises.push(node.config_gateway.config_set_change_detection(mac, config.change_enabled ? 1 : 0, parseInt(config.change_pr), parseInt(config.change_interval)));
+				}
+				switch(sensor.type){
+					case 13:
+						promises.push(node.config_gateway.config_set_cm_calibration(mac, parseFloat(config.cm_calibration)));
+						break;
+					case 6:
+						promises.push(node.config_gateway.config_set_bp_altitude(mac, parseInt(config.bp_altitude)));
+						promises.push(node.config_gateway.config_set_bp_pressure(mac, parseInt(config.bp_pressure)));
+						promises.push(node.config_gateway.config_set_bp_temp_precision(mac, parseInt(config.bp_temp_prec)));
+						promises.push(node.config_gateway.config_set_bp_press_precision(mac, parseInt(config.bp_press_prec)));
+						break;
+					case 5:
+						promises.push(node.config_gateway.config_set_amgt_accel(mac, parseInt(config.amgt_accel)));
+						promises.push(node.config_gateway.config_set_amgt_magnet(mac, parseInt(config.amgt_mag)));
+						promises.push(node.config_gateway.config_set_amgt_gyro(mac, parseInt(config.amgt_gyro)));
+						break;
+				}
+
+				Promise.all(promises).then(() => {
 
 				}).catch((err) => {
 					console.log(err);
@@ -156,7 +181,7 @@ module.exports = function(RED) {
 			});
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
 				node.status(modes[sensor.mode]);
-				if(config.auto_config && sensor.mode == "PGM") _config(sensor.mac);
+				if(config.auto_config && sensor.mode == "PGM") _config(sensor);
 			});
 		}else if(config.sensor_type){
 			this.gtw_on('sensor_data-'+config.sensor_type, (data) => {
@@ -172,7 +197,7 @@ module.exports = function(RED) {
 				if(sensor.type == config.sensor_type){
 					node.status(modes[sensor.mode]);
 					if(config.auto_config && sensor.mode == 'PGM'){
-						_config(sensor.mac);
+						_config(sensor);
 					}
 				}
 			});
@@ -198,7 +223,6 @@ module.exports = function(RED) {
 					'In config mode',
 					'Failed to connect'
 				]
-				console.log('updating pan to'+((pan[0] << 8) + pan[1]));
 				node.gateway.digi.send.at_command("ID", pan).then().catch().then(() => {
 					node._gateway_node.check_mode((m) => {
 						node.set_status();
@@ -243,6 +267,7 @@ module.exports = function(RED) {
         if (node != null) {
             try {
 				var sensors = [];
+
 				for(var i in node.gateway.sensor_pool){
 					if(node.sensor_pool.indexOf(node.gateway.sensor_pool[i].mac) > -1) continue;
 					sensors.push(node.gateway.sensor_pool[i])
