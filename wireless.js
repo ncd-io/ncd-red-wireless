@@ -145,7 +145,9 @@ module.exports = function(RED) {
 				}
 				switch(sensor.type){
 					case 13:
-						promises.push(node.config_gateway.config_set_cm_calibration(mac, parseFloat(config.cm_calibration)));
+						var cali = parseFloat(config.cm_calibration);
+						if(cali == 0) break;
+						promises.push(node.config_gateway.config_set_cm_calibration(mac, cali));
 						break;
 					case 6:
 						promises.push(node.config_gateway.config_set_bp_altitude(mac, parseInt(config.bp_altitude)));
@@ -159,14 +161,28 @@ module.exports = function(RED) {
 						promises.push(node.config_gateway.config_set_amgt_gyro(mac, parseInt(config.amgt_gyro)));
 						break;
 				}
-
-				Promise.all(promises).then(() => {
-
-				}).catch((err) => {
-					console.log(err);
-				}).then(() => {
-					node.status(modes.READY);
+				promises.push(new Promise((fulfill, reject) => {
+						node.config_gateway.queue.add(() => {
+							return new Promise((f, r) => {
+								node.status(modes.READY);
+								fulfill();
+								f();
+							})
+						})
+					}));
+				promises.forEach((v) => {
+					v.then().catch((err) => {
+						node.error(err);
+					});
 				});
+				// Promise.all(promises).then(() => {
+				//
+				// }).catch((err) => {
+				// 	node.error(err);
+				// 	console.log(err);
+				// }).then(() => {
+				// 	node.status(modes.READY);
+				// });
 			}, 1000);
 		}
 		if(config.addr){
