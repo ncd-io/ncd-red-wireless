@@ -217,6 +217,12 @@
                     }).autocomplete("search","");
                 });
             });
+			$('.section .section-control').each(function(){
+				$(this).click(function(){
+					$(this).closest('.section').find('input, select').not('.section-control').prop('disabled', !$(this).is(':checked'));
+				});
+				$(this).click();
+			});
 		},
 	});
 </script>
@@ -259,12 +265,12 @@
 			<option value="10012">2-Relay + 2-Input</option>
 		</select>
 	</div>
-	<div class="collapsible collapsed">
+	<div class="section">
 		<h3>Advanced</h3>
 		<div>
 			<div class="form-row">
 				<label for="node-input-auto_config"><i class="icon-tag"></i> Auto Config</label>
-				<input type="checkbox" id="node-input-auto_config" value="1">
+				<input class="section-control" type="checkbox" id="node-input-auto_config" value="1">
 			</div>
 			<div class="form-row">
 				<label for="node-input-node_id"><i class="icon-tag"></i> Node ID</label>
@@ -391,7 +397,7 @@
 	<h4>Sensor Type</h4>
 	<p>If you wish to capture all data from sensors that match a particular type, you can use this instead of the mac address. </b>Optional</b></p>
 	<h4>Advanced/Auto config</h4>
-	<p>If the Auto Config checkbox is active, the settings below it will propogate to the sensor when the modem detects that it has entered configuration mode. You can find more information about these settings on the appropriate product manual</p>
+	<p>If the Auto Config checkbox is active, the settings below it will propogate to the sensor when the modem detects that it has entered configuration mode. You can find more information about these settings on the appropriate product manual, and information about deploying these settings in <a href="https://ncd.io/configuring-the-wireless-enterprise-line-with-node-red/" target="_blank">this tutorial</a></p>
 	<h4>Output</h4>
 	<p>This node will output detailed information about incoming sensor data, and the device identity and status including. The payload will contain an object containing sensor data, an example can be seen below:</p>
 	<pre>
