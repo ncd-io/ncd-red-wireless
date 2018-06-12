@@ -3,11 +3,12 @@
         category: 'NCD',
         color: '#a6bbcf',
 		icon: "serial.png",
+		paletteLabel: "Wireless Gateway",
         defaults: {
 			name: {value: ""},
 			connection: {value: "", type: "ncd-gateway-config"},
 		},
-		inputs: 1,
+		inputs: 0,
 		outputs: 1,
 		label: function() {
             return this.name || "Wireless Gateway";
@@ -59,23 +60,72 @@
 		<label for="node-input-connection"><i class="icon-tag"></i> Serial Device</label>
 		<select id="node-input-connection"></select>
 	</div>
-
 </script>
+
+<script type="text/x-red" data-help-name="ncd-gateway-node">
+    <h3>Gateway Node</h3>
+	<p>This node is primarily useful for debugging and configuring sensors. This node is equipped with a button on the flow that switches the modem between configuration and listening mode.</p>
+	<h3>Output</h3>
+	<p>Any time sensor data is received from any sensor on the network, this node will output a message containing all pertinant information as in the example below.</p>
+	<pre>
+  msg = {
+    topic: "sensor_data",
+    payload: {
+      nodeId: 0,
+      firmware: 3,
+      battery: 3.2940600000000004,
+      counter: 37,
+      sensor_type: 1,
+      sensor_data: {
+        humidity: 45.51,
+        temperature: 23.91,
+      },
+      type: "sensor_data",
+      addr: "00:13:a2:00:41:07:18:81",
+      original: {
+        mac: "00:13:a2:00:41:07:18:81",
+        receive_options: {
+          ack: 0,
+          broadcast: 0,
+          type: ""
+        }
+      },
+      data: [127,0,3,3,255,37,0,1,0,17,199,9,87],
+      type: "receive_packet"
+    },
+    _msgid: "391caba.5a19454"
+  }
+	</pre>
+</script>
+
 
 <script type="text/javascript">
 	NCD_validators = {
 		number_range: function(l, h, base){
 			if(!base) base = 10;
-			return function(v){
-				var int = parseInt(v, 16);
-				return int >= l && int <= h;
+			if(base == 'decimal'){
+				return function(v){
+					var n = parseFloat(v);
+					return n >= l && n <= h;
+				}
+			}else{
+				return function(v){
+					var int = parseInt(v, 16);
+					return int >= l && int <= h;
+				}
 			}
 		}
+	}
+	var ncd_field_states = function(){
+		var type = $('#node-input-sensor_type').val();
+		$('.ncd-dependent').hide();
+		$('.ncd-dependent[data-sensor-'+type+']').show();
 	}
     RED.nodes.registerType('ncd-wireless-node',{
         category: 'NCD',
         color: '#a6bbcf',
 		icon: "serial.png",
+		paletteLabel: "Wireless Device",
         defaults: {
 			name: {value: ""},
 			connection: {value: "", type: "ncd-gateway-config"},
@@ -90,8 +140,25 @@
 			power: {value: 4},//(0 - 4)
 			retries: {value: 10, validate: NCD_validators.number_range(0, 16)},//(0 - 16)
 			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)},//(0 - 0x7FFF)
+
+			change_enabled: {value: ""},
+			change_pr: {value: "0", validate: NCD_validators.number_range(0, 255)},
+			change_interval: {value: "0", validate: NCD_validators.number_range(0, 16712198)},
+
+			cm_calibration: {value: "60.6", validate: NCD_validators.number_range(0, 655.35, 'decimal')},
+
+			bp_altitude: {value: "0", validate: NCD_validators.number_range(0, 65535)},
+			bp_pressure: {value: "0", validate: NCD_validators.number_range(0, 14000)},
+
+			bp_temp_prec: {value: "0"},
+			bp_press_prec: {value: "0"},
+
+			amgt_accel: {value: "0"},
+			amgt_mag: {value: "0"},
+			amgt_gyro: {value: "0"},
+
 		},
-		inputs: 1,
+		inputs: 0,
 		outputs: 1,
 		label: function() {
 			if(this.name) return this.name;
@@ -107,9 +174,10 @@
 					"8": "Vibration",
 					"9": "Proximity",
 					"10": "Light",
-					"23": "One Channel Counter",
-					"24": "Two Channel Counter",
+					"13": "Current Monitor",
 					"25": "7 Channel Push Notification",
+					"35": "One Channel Counter",
+					"36": "Two Channel Counter",
 					"10006": "4-Channel 4-20 mA Input",
 					"10007": "4-Channel Current Monitor",
 					"10012": "2-Relay + 2-Input",
@@ -122,7 +190,8 @@
 			try {
                 $("#node-config-input-addr").autocomplete( "destroy" );
             } catch(err) {}
-
+			$('.ncd-dependent[sensor_type]').hide();
+			$('#node-input-sensor_type').change(ncd_field_states);
 			$("#node-lookup-sensors").click(function() {
                 $("#node-lookup-sensors").addClass('disabled');
 				var connection = RED.nodes.node($('#node-input-connection').val())
@@ -142,11 +211,18 @@
                         },
 						select: function(e, ui){
 							$('#node-input-sensor_type option[value="'+sensors[ui.item.value].type+'"]').prop('selected', true);
+							$('#node-input-sensor_type').change();
 							$('#node-input-node_id').val(sensors[ui.item.value].nodeId);
 						}
                     }).autocomplete("search","");
                 });
             });
+			$('.section .section-control').each(function(){
+				$(this).click(function(){
+					$(this).closest('.section').find('input, select').not('.section-control').prop('disabled', !$(this).is(':checked'));
+				});
+				$(this).click();
+			});
 		},
 	});
 </script>
@@ -175,25 +251,26 @@
 			<option value="2">2 Channel Push Notification</option>
 			<option value="3">ADC</option>
 			<option value="4">Thermocouple</option>
-			<option value="5">Gyro/Magneto/Temperature</option>
+			<option value="5">Accel/Gyro/Magneto/Temperature</option>
 			<option value="6">Temperature/Barometeric Pressure</option>
 			<option value="8">Vibration</option>
 			<option value="9">Proximity</option>
 			<option value="10">Light</option>
-			<option value="23">One Channel Counter</option>
-			<option value="24">Two Channel Counter</option>
+			<option value="13">Current Monitor</option>
+			<option value="35">One Channel Counter</option>
+			<option value="36">Two Channel Counter</option>
 			<option value="25">7 Channel Push Notification</option>
 			<option value="10006">4-Channel 4-20 mA Input</option>
 			<option value="10007">4-Channel Current Monitor</option>
 			<option value="10012">2-Relay + 2-Input</option>
 		</select>
 	</div>
-	<div class="collapsible collapsed">
+	<div class="section">
 		<h3>Advanced</h3>
 		<div>
 			<div class="form-row">
 				<label for="node-input-auto_config"><i class="icon-tag"></i> Auto Config</label>
-				<input type="checkbox" id="node-input-auto_config" value="1">
+				<input class="section-control" type="checkbox" id="node-input-auto_config" value="1">
 			</div>
 			<div class="form-row">
 				<label for="node-input-node_id"><i class="icon-tag"></i> Node ID</label>
@@ -225,8 +302,137 @@
 				<label for="node-input-pan_id"><i class="icon-tag"></i> Network ID (0 - 0x7FFF)</label>
 				0x<input type="text" id="node-input-pan_id" value="7FFF">
 			</div>
+			<div class="ncd-dependent" data-sensor-13 data-sensor-10 data-sensor-3>
+				<div class="form-row">
+					<label for="node-input-change_enabled"><i class="icon-tag"></i> Enable Percentage Change Detection</label>
+					<input type="checkbox" id="node-input-change_enabled" value="1">
+				</div>
+				<div class="form-row">
+					<label for="node-input-change_pr"><i class="icon-tag"></i> Percentage Change Threshold (0-255)</label>
+					<input type="text" id="node-input-change_pr">
+				</div>
+				<div class="form-row">
+					<label for="node-input-change_interval"><i class="icon-tag"></i> Percentage Change Interval (seconds)</label>
+					<input type="text" id="node-input-change_interval">
+				</div>
+			</div>
+			<!-- Current Monitor Options -->
+			<div class="ncd-dependent" data-sensor-13>
+				<div class="form-row">
+					<label for="node-input-cm_calibration"><i class="icon-tag"></i> Calibration Option (0 - 655.35)</label>
+					<input type="text" id="node-input-cm_calibration">
+				</div>
+			</div>
+			<!-- Barometric Pressure Options -->
+			<div class="ncd-dependent" data-sensor-6>
+				<div class="form-row">
+					<label for="node-input-bp_altitude"><i class="icon-tag"></i> Baseline Altitude (0 - 65535 meters)</label>
+					<input type="text" id="node-input-bp_altitude">
+				</div>
+				<div class="form-row">
+					<label for="node-input-bp_pressure"><i class="icon-tag"></i> Baseline Pressure (0 - 14000 mbar)</label>
+					<input type="text" id="node-input-bp_pressure">
+				</div>
+				<div class="form-row">
+					<label for="node-input-bp_temp_prec"><i class="icon-tag"></i> Temperature Precision</label>
+					<select id="node-input-bp_temp_prec">
+						<option selected="selected" value="0">0.012</option>
+						<option value="2">0.008</option>
+						<option value="4">0.005</option>
+						<option value="6">0.003</option>
+						<option value="8">0.002</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-bp_press_prec"><i class="icon-tag"></i> Pressure Precision</label>
+					<select id="node-input-bp_press_prec">
+						<option selected="selected" value="0">0.065</option>
+						<option value="2">0.042</option>
+						<option value="4">0.027</option>
+						<option value="6">0.018</option>
+						<option value="8">0.012</option>
+					</select>
+				</div>
+			</div>
+			<!-- Magneto/Gyro/Accel/Temp Options -->
+			<div class="ncd-dependent" data-sensor-5>
+				<div class="form-row">
+					<label for="node-input-amgt_accel"><i class="icon-tag"></i> Acceleration Range</label>
+					<select id="node-input-amgt_accel">
+						<option selected="selected" value="0">±2g</option>
+						<option value="1">±4g</option>
+						<option value="3">±8g</option>
+						<option value="4">±16g</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-amgt_mag"><i class="icon-tag"></i> Magnetometer Gain</label>
+					<select id="node-input-amgt_mag">
+						<option selected="selected" value="0">±4 gauss</option>
+						<option value="1">±8 gauss</option>
+						<option value="2">±12 gauss</option>
+						<option value="3">±16 gauss</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-amgt_gyro"><i class="icon-tag"></i> Gyroscope Scale</label>
+					<select id="node-input-amgt_gyro">
+						<option selected="selected" value="0">±245dps</option>
+						<option value="1">±500dps</option>
+						<option value="2">±2000dps</option>
+					</select>
+				</div>
+			</div>
 		</div>
 	</div>
+</script>
+
+<script type="text/x-red" data-help-name="ncd-wireless-node">
+    <h3>Wireless Node</h3>
+	<p>This node is used to filter sensor data coming from a modem. It can filter by mac address, or sensor type, and can be used to configure wireless devices automatically when they enter configuration mode.</p>
+	<h4>Serial Devices</h4>
+	<p>The Serial Device field refers to the modem that will be recieving the packets from the device. The Serial Device for Config field refers to a modem that is always set to the config network ID (0x7BCD), this is the recommended setup as it allows you to configure nodes without missing potentially important sensor data, however, the config button on the Wireless Gateway node may be used if a single modem will be acting as both the listener, and config endpoints, making the second selection optional.</p>
+	<h4>Mac Address</h4>
+	<p>The mac address of the device you wish to listen for, if you have already deployed a flow using the connected serial device, you may use the magnifying glass icon to pull a list of mac addresses that have already checked in, otherwise you can enter the mac address manually. </b>Optional</b></p>
+	<h4>Sensor Type</h4>
+	<p>If you wish to capture all data from sensors that match a particular type, you can use this instead of the mac address. </b>Optional</b></p>
+	<h4>Advanced/Auto config</h4>
+	<p>If the Auto Config checkbox is active, the settings below it will propogate to the sensor when the modem detects that it has entered configuration mode. You can find more information about these settings on the appropriate product manual, and information about deploying these settings in <a href="https://ncd.io/configuring-the-wireless-enterprise-line-with-node-red/" target="_blank">this tutorial</a></p>
+	<h4>Output</h4>
+	<p>This node will output detailed information about incoming sensor data, and the device identity and status including. The payload will contain an object containing sensor data, an example can be seen below:</p>
+	<pre>
+  msg = {
+    topic: "sensor_data",
+	payload: {
+      humidity: 45.51,
+      temperature: 23.91,
+	}
+    data: {
+      nodeId: 0,
+      firmware: 3,
+      battery: 3.2940600000000004,
+      counter: 37,
+      sensor_type: 1,
+      sensor_data: {
+        humidity: 45.51,
+        temperature: 23.91,
+      },
+      type: "sensor_data",
+      addr: "00:13:a2:00:41:07:18:81",
+      original: {
+        mac: "00:13:a2:00:41:07:18:81",
+        receive_options: {
+          ack: 0,
+          broadcast: 0,
+          type: ""
+        }
+      },
+      data: [127,0,3,3,255,37,0,1,0,17,199,9,87],
+      type: "receive_packet"
+    },
+    _msgid: "391caba.5a19454"
+  }
+	</pre>
 </script>
 
 <script type="text/javascript">
@@ -244,7 +450,7 @@
 		defaults: {
 			name: {value: ""},
 			port: {value: ""},
-			baudRate: {value: 9600, validate:RED.validators.number()},
+			baudRate: {value: 115200, validate:RED.validators.number()},
 			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)}
 		},
 		label: function(){

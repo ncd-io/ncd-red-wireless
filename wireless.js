@@ -10,12 +10,10 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this,config);
         this.port = config.port;
 		this.baudRate = parseInt(config.baudRate);
+
 		this.sensor_pool = [];
-		if(typeof gateway_pool[this.port] != 'undefined'){
-			if(this.baudRate != gateway_pool[this.port].digi.serial.baudRate){
-				gateway_pool[this.port].digi.serial.update({baudRate: this.baudRate}).then().catch(console.log);
-			}
-		}else{
+
+		if(typeof gateway_pool[this.port] == 'undefined'){
 			var serial = new comms.NcdSerial(this.port, this.baudRate);
 			serial.on('error', (err) => {
 				console.log(err);
@@ -24,15 +22,14 @@ module.exports = function(RED) {
 			gateway_pool[this.port] = new wireless.Gateway(modem);
 		}
 		this.gateway = gateway_pool[this.port];
+
 		var node = this;
 		this.on('close', () => {
 			node.gateway._emitter.removeAllListeners('sensor_data');
 			node.gateway.digi.serial.close();
+			delete gateway_pool[this.port];
 		});
-		// node.gateway.digi.send.at_command("SL").then((res) => {
-		// 	node.gateway.addr = res.data.reduce((m,l) => (m<<8)+l).toString(16);
-		// }).catch((err) => {
-		// });
+
 		node.check_mode = function(cb){
 			node.gateway.digi.send.at_command("ID").then((res) => {
 				var pan_id = (res.data[0] << 8) | res.data[1];
@@ -49,15 +46,17 @@ module.exports = function(RED) {
 				if(cb) cb(node.is_config);
 			});
 		}
-		node.check_mode((mode) => {
-			var pan_id = parseInt(config.pan_id, 16);
-			if(!mode && node.gateway.pan_id != pan_id){
-				node.gateway.digi.send.at_command("ID", [pan_id >> 8, pan_id & 255]).then((res) => {
-					node.gateway.pan_id = pan_id;
-				}).catch((err) => {
-					console.log(err);
-				});
-			}
+		node.gateway.digi.serial.on('ready', () => {
+			node.check_mode((mode) => {
+				var pan_id = parseInt(config.pan_id, 16);
+				if(!mode && node.gateway.pan_id != pan_id){
+					node.gateway.digi.send.at_command("ID", [pan_id >> 8, pan_id & 255]).then((res) => {
+						node.gateway.pan_id = pan_id;
+					}).catch((err) => {
+						console.log(err);
+					});
+				}
+			});
 		});
 	}
 
@@ -79,9 +78,7 @@ module.exports = function(RED) {
 			node.status(statuses[node._gateway_node.is_config]);
 		}
 		node.gateway.on('sensor_data', (d) => node.send({topic: 'sensor_data', payload: d}));
-		// node.on('close', () => {
-		// 	node.gateway._emitter.removeAllListeners('sensor_data');
-		// });
+
 		node.set_status();
 	}
 	RED.nodes.registerType("ncd-gateway-node", NcdGatewayNode);
@@ -115,39 +112,78 @@ module.exports = function(RED) {
 			this.config_gateway.on(event, cb);
 		}
 		function _delay(time){
-			node.queue.add(() => {
+			//node.queue.add(() => {
 				return new Promise((fulfill, reject) => {
 					setTimeout(fulfill, time);
 				});
+			//});
+		}
+		function simpleWrapper(p){
+			return new Promise((fulfill, reject) => {
+				p.then(fulfill).catch((err) => {
+					console.log(err);
+					reject(err);
+				})
 			});
 		}
-
-		function _config(mac){
-			_delay(1000);
-			node.queue.add(() => {
+		function _config(sensor){
+			var mac = sensor.mac;
+			//_delay(1000);
+			setTimeout(() => {
 				node.status(modes.PGM_NOW);
 				var dest = config.destination;
-				//if(!dest) dest = node.gateway.addr;
-				node.config_gateway.config_set_destination(mac, parseInt(dest, 16));
-			});
-			node.queue.add(() => {
-				node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay));
-			});
-			node.queue.add(() => {
-				node.config_gateway.config_set_power(mac, parseInt(config.power));
-			});
-			node.queue.add(() => {
-				node.config_gateway.config_set_retries(mac, parseInt(config.retries));
-			});
-			node.queue.add(() => {
-				node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16));
-			});
-			node.queue.add(() => {
-				return new Promise((fulfill, reject) => {
-					node.status(modes.READY);
-					fulfill();
+				var promises = [
+					node.config_gateway.config_set_destination(mac, parseInt(dest, 16)),
+					node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
+					node.config_gateway.config_set_power(mac, parseInt(config.power)),
+					node.config_gateway.config_set_retries(mac, parseInt(config.retries)),
+					node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
+				];
+				var change_detection = [13, 10, 3];
+				if(change_detection.indexOf(sensor.type) > -1){
+					promises.push(node.config_gateway.config_set_change_detection(mac, config.change_enabled ? 1 : 0, parseInt(config.change_pr), parseInt(config.change_interval)));
+				}
+				switch(sensor.type){
+					case 13:
+						var cali = parseFloat(config.cm_calibration);
+						if(cali == 0) break;
+						promises.push(node.config_gateway.config_set_cm_calibration(mac, cali));
+						break;
+					case 6:
+						promises.push(node.config_gateway.config_set_bp_altitude(mac, parseInt(config.bp_altitude)));
+						promises.push(node.config_gateway.config_set_bp_pressure(mac, parseInt(config.bp_pressure)));
+						promises.push(node.config_gateway.config_set_bp_temp_precision(mac, parseInt(config.bp_temp_prec)));
+						promises.push(node.config_gateway.config_set_bp_press_precision(mac, parseInt(config.bp_press_prec)));
+						break;
+					case 5:
+						promises.push(node.config_gateway.config_set_amgt_accel(mac, parseInt(config.amgt_accel)));
+						promises.push(node.config_gateway.config_set_amgt_magnet(mac, parseInt(config.amgt_mag)));
+						promises.push(node.config_gateway.config_set_amgt_gyro(mac, parseInt(config.amgt_gyro)));
+						break;
+				}
+				promises.push(new Promise((fulfill, reject) => {
+						node.config_gateway.queue.add(() => {
+							return new Promise((f, r) => {
+								node.status(modes.READY);
+								fulfill();
+								f();
+							})
+						})
+					}));
+				promises.forEach((v) => {
+					v.then().catch((err) => {
+						node.error(err);
+					});
 				});
-			});
+				// Promise.all(promises).then(() => {
+				//
+				// }).catch((err) => {
+				// 	node.error(err);
+				// 	console.log(err);
+				// }).then(() => {
+				// 	node.status(modes.READY);
+				// });
+			}, 1000);
 		}
 		if(config.addr){
 			RED.nodes.getNode(config.connection).sensor_pool.push(config.addr);
@@ -161,7 +197,7 @@ module.exports = function(RED) {
 			});
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
 				node.status(modes[sensor.mode]);
-				if(config.auto_config && sensor.mode == "PGM") _config(sensor.mac);
+				if(config.auto_config && sensor.mode == "PGM") _config(sensor);
 			});
 		}else if(config.sensor_type){
 			this.gtw_on('sensor_data-'+config.sensor_type, (data) => {
@@ -173,16 +209,11 @@ module.exports = function(RED) {
 				});
 			});
 
-			// this.gateway.on('sensor_mode', (sensor) => {
-			// 	if(sensor.sensor_type == config.sensor_type){
-			// 		node.status(modes[sensor.mode]);
-			// 	}
-			// });
 			this.pgm_on('sensor_mode', (sensor) => {
 				if(sensor.type == config.sensor_type){
 					node.status(modes[sensor.mode]);
 					if(config.auto_config && sensor.mode == 'PGM'){
-						_config(sensor.mac);
+						_config(sensor);
 					}
 				}
 			});
@@ -208,7 +239,6 @@ module.exports = function(RED) {
 					'In config mode',
 					'Failed to connect'
 				]
-				console.log('updating pan to'+((pan[0] << 8) + pan[1]));
 				node.gateway.digi.send.at_command("ID", pan).then().catch().then(() => {
 					node._gateway_node.check_mode((m) => {
 						node.set_status();
@@ -253,6 +283,7 @@ module.exports = function(RED) {
         if (node != null) {
             try {
 				var sensors = [];
+
 				for(var i in node.gateway.sensor_pool){
 					if(node.sensor_pool.indexOf(node.gateway.sensor_pool[i].mac) > -1) continue;
 					sensors.push(node.gateway.sensor_pool[i])
