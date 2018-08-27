@@ -149,6 +149,15 @@ module.exports = function(RED) {
 						if(cali == 0) break;
 						promises.push(node.config_gateway.config_set_cm_calibration(mac, cali));
 						break;
+					case 24:
+						var interr = parseInt(config.activ_interr_x) | parseInt(config.activ_interr_y) | parseInt(config.activ_interr_z) | parseInt(config.activ_interr_op);
+						promises.push(node.config_gateway.config_set_activ_interr(mac, interr));
+					case 7:
+						promises.push(node.config_gateway.config_set_impact_accel(mac, parseInt(config.impact_accel)));
+						promises.push(node.config_gateway.config_set_impact_data_rate(mac, parseInt(config.impact_data_rate)));
+						promises.push(node.config_gateway.config_set_impact_threshold(mac, parseInt(config.impact_threshold)));
+						promises.push(node.config_gateway.config_set_impact_duration(mac, parseInt(config.impact_duration)));
+						break;
 					case 6:
 						promises.push(node.config_gateway.config_set_bp_altitude(mac, parseInt(config.bp_altitude)));
 						promises.push(node.config_gateway.config_set_bp_pressure(mac, parseInt(config.bp_pressure)));
