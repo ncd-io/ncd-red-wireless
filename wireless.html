@@ -157,6 +157,15 @@
 			amgt_mag: {value: "0"},
 			amgt_gyro: {value: "0"},
 
+			impact_accel: {value: "0"},
+			impact_data_rate: {value: "4"},
+			impact_threshold: {value: 25, validate: NCD_validators.number_range(1, 127)},
+			impact_duration: {value: 1, validate: NCD_validators.number_range(1, 127)},
+
+			activ_interr_x: {value: 1, validate: RED.validators.number()},
+			activ_interr_y: {value: 2, validate: RED.validators.number()},
+			activ_interr_z: {value: 4, validate: RED.validators.number()},
+			activ_interr_op: {value: 8, validate: RED.validators.number()},
 		},
 		inputs: 0,
 		outputs: 1,
@@ -166,18 +175,22 @@
 			if(this.sensor_type){
 				var types = {
 					"1": "Temperature/Humidity",
-					"2": "2 Channel Push Notification",
-					"3": "ADC",
+					"2": "2ch Push Notification/Voltage Detection",
+					"3": "ADC/4-20 mA/DC Voltage",
 					"4": "Thermocouple",
 					"5": "Gyro/Magneto/Temperature",
 					"6": "Temperature/Barometeric Pressure",
+					"7": "Impact Detection",
 					"8": "Vibration",
-					"9": "Proximity",
+					"9": "Proximity and Light",
 					"10": "Light",
 					"13": "Current Monitor",
-					"25": "7 Channel Push Notification",
-					"35": "One Channel Counter",
-					"36": "Two Channel Counter",
+					"18": "Pulse Frequency",
+					"24": "Activity Detection",
+					"25": "Asset Monitor",
+					"35": "1 Channel Counter",
+					"36": "2 Channel Counter",
+					"37": "7 Channel Push Notification",
 					"10006": "4-Channel 4-20 mA Input",
 					"10007": "4-Channel Current Monitor",
 					"10012": "2-Relay + 2-Input",
@@ -218,10 +231,11 @@
                 });
             });
 			$('.section .section-control').each(function(){
-				$(this).click(function(){
+				var handleClick = function(){
 					$(this).closest('.section').find('input, select').not('.section-control').prop('disabled', !$(this).is(':checked'));
-				});
-				$(this).click();
+				}
+				$(this).click(handleClick);
+				handleClick.apply(this);
 			});
 		},
 	});
@@ -247,19 +261,23 @@
 	<div class="form-row">
 		<label for="node-input-sensor_type"><i class="icon-tag"></i> Sensor Type</label>
 		<select id="node-input-sensor_type">
-			<option value="1">Temperature/Humidity</option>
-			<option value="2">2 Channel Push Notification</option>
-			<option value="3">ADC</option>
+			<option value="1">Temperature and Humidity</option>
+			<option value="2">2ch Push Notification/Voltage Detection</option>
+			<option value="3">ADC/4-20 mA/DC Voltage</option>
 			<option value="4">Thermocouple</option>
-			<option value="5">Accel/Gyro/Magneto/Temperature</option>
-			<option value="6">Temperature/Barometeric Pressure</option>
+			<option value="5">Accel, Gyro, Magneto and Temperature</option>
+			<option value="6">Temperature and Barometeric Pressure</option>
+			<option value="7">Impact Detection</option>
 			<option value="8">Vibration</option>
 			<option value="9">Proximity</option>
 			<option value="10">Light</option>
 			<option value="13">Current Monitor</option>
+			<option value="18">Pulse Frequency</option>
+			<option value="24">Activity Detection</option>
+			<option value="25">Asset Monitor</option>
 			<option value="35">One Channel Counter</option>
 			<option value="36">Two Channel Counter</option>
-			<option value="25">7 Channel Push Notification</option>
+			<option value="37">7 Channel Push Notification</option>
 			<option value="10006">4-Channel 4-20 mA Input</option>
 			<option value="10007">4-Channel Current Monitor</option>
 			<option value="10012">2-Relay + 2-Input</option>
@@ -380,6 +398,71 @@
 						<option selected="selected" value="0">±245dps</option>
 						<option value="1">±500dps</option>
 						<option value="2">±2000dps</option>
+					</select>
+				</div>
+			</div>
+			<div class="ncd-dependent" data-sensor-7 data-sensor-24>
+				<div class="form-row">
+					<label for="node-input-impact_accel"><i class="icon-tag"></i> Acceleration Range</label>
+					<select id="node-input-impact_accel">
+						<option selected="selected" value="0">±2g</option>
+						<option value="1">±4g</option>
+						<option value="3">±8g</option>
+						<option value="4">±16g</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-impact_data_rate"><i class="icon-tag"></i> Data Rate</label>
+					<select id="node-input-impact_data_rate">
+						<option selected="selected" value="0">Power Down</option>
+						<option value="1">1</option>
+						<option value="2">10</option>
+						<option value="3">25</option>
+						<option value="4">50</option>
+						<option value="5">100</option>
+						<option value="6">200</option>
+						<option value="7">400</option>
+						<option value="8">1600</option>
+						<option value="9">5376</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-impact_threshold"><i class="icon-tag"></i> Threshold (1 - 127)</label>
+					<input id="node-input-impact_threshold">
+				</div>
+				<div class="form-row">
+					<label for="node-input-impact_duration"><i class="icon-tag"></i> Duration (1 - 127)</label>
+					<input id="node-input-impact_duration">
+				</div>
+			</div>
+			<div class="ncd-dependent" data-sensor-24>
+			//activ_interr_x
+				<div class="form-row">
+					<label for="node-input-activ_interr_x"><i class="icon-tag"></i> Interrupt X-Axis</label>
+					<select id="node-input-activ_interr_x">
+						<option value="1">High</option>
+						<option value="0">Low</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-activ_interr_y"><i class="icon-tag"></i> Interrupt Y-Axis</label>
+					<select id="node-input-activ_interr_y">
+						<option value="2">High</option>
+						<option value="0">Low</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-activ_interr_z"><i class="icon-tag"></i> Interrupt Z-Axis</label>
+					<select id="node-input-activ_interr_z">
+						<option value="4">High</option>
+						<option value="0">Low</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-activ_interr_op"><i class="icon-tag"></i> Interrupt Logic</label>
+					<select id="node-input-activ_interr_op">
+						<option value="8">And</option>
+						<option value="0">Or</option>
 					</select>
 				</div>
 			</div>
