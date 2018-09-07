@@ -116,11 +116,6 @@
 			}
 		}
 	}
-	var ncd_field_states = function(){
-		var type = $('#node-input-sensor_type').val();
-		$('.ncd-dependent').hide();
-		$('.ncd-dependent[data-sensor-'+type+']').show();
-	}
     RED.nodes.registerType('ncd-wireless-node',{
         category: 'NCD',
         color: '#a6bbcf',
@@ -191,6 +186,7 @@
 					"35": "1 Channel Counter",
 					"36": "2 Channel Counter",
 					"37": "7 Channel Push Notification",
+					"10006": "4-Channel Relay",
 					"10006": "4-Channel 4-20 mA Input",
 					"10007": "4-Channel Current Monitor",
 					"10012": "2-Relay + 2-Input",
@@ -200,11 +196,27 @@
 			return 'Wireless Device';
         },
 		oneditprepare: function() {
+			var that = this;
 			try {
                 $("#node-config-input-addr").autocomplete( "destroy" );
             } catch(err) {}
 			$('.ncd-dependent[sensor_type]').hide();
-			$('#node-input-sensor_type').change(ncd_field_states);
+			$('#node-input-sensor_type').change(() => {
+				var type = $('#node-input-sensor_type').val();
+				$('.ncd-dependent').hide();
+				$('.ncd-dependent[data-sensor-'+type+']').show();
+				if(parseInt(type) >= 10000){
+					var current = $('#node-input-auto_config').prop('checked');
+					if(!current) $('#node-input-auto_config').click();
+					$('#node-input-auto_config').data('_checked', current).closest('.form-row').hide();
+					this.inputs = 1;
+				}else{
+					$("#node-input-auto_config").closest('.form-row').show();
+					if (typeof $("#node-input-auto_config").data('_checked') !== 'undefined'){
+						$('#node-input-auto_config').prop('checked', $("#node-input-auto_config").data('_checked')).click().removeData('_checked');
+					}
+				}
+			});
 			$("#node-lookup-sensors").click(function() {
                 $("#node-lookup-sensors").addClass('disabled');
 				var connection = RED.nodes.node($('#node-input-connection').val())
@@ -236,6 +248,25 @@
 				}
 				$(this).click(handleClick);
 				handleClick.apply(this);
+			});
+			$('#config_sensor').click(function(){
+				if($(this).prop('disabled')) return;
+				$(this).prop('disabled', true).text('Configuring...');
+				$('#config_response').empty();
+				$.getJSON('ncd/wireless/sensors/configure/'+that.id,function(data) {
+
+					var clean = true;
+					for(var i in data){
+						if(data[i] !== true){
+							clean = false;
+							$('#config_response').append('<div>Problem setting '+i+': '+data[i]);
+						}
+					}
+					if(clean){
+						$('#config_response').append('<div>All configurations successfully set</div>');;
+					}
+					$('#config_sensor').prop('disabled', false).text('Configure Now');
+				});
 			});
 		},
 	});
@@ -278,6 +309,7 @@
 			<option value="35">One Channel Counter</option>
 			<option value="36">Two Channel Counter</option>
 			<option value="37">7 Channel Push Notification</option>
+			<option value="10000">4-Channel Relay</option>
 			<option value="10006">4-Channel 4-20 mA Input</option>
 			<option value="10007">4-Channel Current Monitor</option>
 			<option value="10012">2-Relay + 2-Input</option>
@@ -466,6 +498,12 @@
 					</select>
 				</div>
 			</div>
+			<div class="ncd-dependent" data-sensor-10000>
+				<div class="form-row">
+					<button id="config_sensor">Configure Now</button>
+					<div id="config_response"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 </script>
@@ -534,7 +572,8 @@
 			name: {value: ""},
 			port: {value: ""},
 			baudRate: {value: 115200, validate:RED.validators.number()},
-			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)}
+			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)},
+			rssi: {value: ""}
 		},
 		label: function(){
 			if(this.name) return this.name;
@@ -621,5 +660,9 @@
 	<div class="form-row">
 		<label for="node-config-input-pan_id"><i class="icon-tag"></i> Network ID (0 - 0x7FFF)</label>
 		0x<input type="text" id="node-config-input-pan_id" value="7FFF">
+	</div>
+	<div class="form-row">
+		<label for="node-config-input-rssi"><i class="icon-tag"></i> Add RSSI to incoming packets</label>
+		<input type="checkbox" id="node-config-input-rssi" value="1">
 	</div>
 </script>
