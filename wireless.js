@@ -100,7 +100,8 @@ module.exports = function(RED) {
 			PGM: {fill:"red",shape:"dot",text:"Config Mode"},
 			PGM_NOW: {fill:"red",shape:"dot",text:"Configuring..."},
 			READY: {fill: "green", shape: "ring", text:"Config Complete"},
-			RUN: {fill:"green",shape:"dot",text:"Running"},
+			PGM_ERR: {fill:"red", shape:"ring", text:"Config Error"},
+			RUN: {fill:"green",shape:"dot",text:"Running"}
 		};
 		var events = {};
 		var pgm_events = {};
@@ -115,7 +116,12 @@ module.exports = function(RED) {
 		function _config(sensor){
 			return new Promise((top_fulfill, top_reject) => {
 
+				var success = {};
 				setTimeout(() => {
+					var tout = setTimeout(() => {
+						node.status(modes.PGM_ERR);
+						node.send({topic: 'Config Results', payload: success});
+					}, 60000);
 					node.status(modes.PGM_NOW);
 					if(parseInt(config.sensor_type) >= 10000){
 						if(sensor) return;
@@ -174,10 +180,10 @@ module.exports = function(RED) {
 								break;
 						}
 					}
-					var success = {};
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
 							return new Promise((f, r) => {
+								clearTimeout(tout);
 								node.status(modes.READY);
 								fulfill();
 								f();
@@ -279,7 +285,7 @@ module.exports = function(RED) {
 				});
             } catch(err) {
                 res.sendStatus(500);
-                node.error(RED._("inject.failed",{error:err.toString()}));
+                node.error(RED._("gateway.update failed",{error:err.toString()}));
             }
         } else {
             res.sendStatus(404);
