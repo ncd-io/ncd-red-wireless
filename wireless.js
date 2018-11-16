@@ -25,10 +25,16 @@ module.exports = function(RED) {
 		this.gateway.digi.report_rssi = config.rssi;
 
 		var node = this;
-		this.on('close', () => {
-			node.gateway._emitter.removeAllListeners('sensor_data');
-			node.gateway.digi.serial.close();
-			delete gateway_pool[this.port];
+		this.on('close', (removed, done) => {
+			if(removed){
+				node.gateway._emitter.removeAllListeners('sensor_data');
+				node.gateway.digi.serial.close(() => {
+					delete gateway_pool[this.port];
+					done();
+				});
+			}else{
+				done();
+			}
 		});
 
 		node.check_mode = function(cb){
