@@ -1,6 +1,6 @@
 {
     "name": "ncd-red-wireless",
-    "version": "1.4.5",
+    "version": "1.4.6",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -15,7 +15,7 @@
         "NCD",
         "Sensors",
         "Digi",
-		"node-red"
+        "node-red"
     ],
     "author": "Trey Felton",
     "license": "MIT",
