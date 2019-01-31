@@ -5,7 +5,6 @@ const Queue = require("promise-queue");
 
 module.exports = function(RED) {
 	var gateway_pool = {};
-
 	function NcdGatewayConfig(config){
 		RED.nodes.createNode(this,config);
         this.port = config.port;
@@ -15,7 +14,7 @@ module.exports = function(RED) {
 
 		if(typeof gateway_pool[this.port] == 'undefined'){
 			var serial = new comms.NcdSerial(this.port, this.baudRate);
-			serial.on('error', (err) => {
+			serial._emitter.on('error', (err) => {
 				console.log(err);
 			});
 			var modem = new wireless.Modem(serial);
@@ -321,9 +320,11 @@ module.exports = function(RED) {
 				modem.send.at_command("ID").then((bytes) => {
 					pan_id = (bytes.data[0] << 8) | bytes.data[1];
 					serial.close();
+					delete gateway_pool[port];
 					res.json({pan_id: pan_id.toString(16)});
 				}).catch((err) => {
 					serial.close();
+					delete gateway_pool[port];
 					res.json(false);
 				});
 			});
