@@ -84,6 +84,7 @@ module.exports = function(RED) {
 			node.status(statuses[node._gateway_node.is_config]);
 		};
 		node.gateway.on('sensor_data', (d) => node.send({topic: 'sensor_data', payload: d}));
+		node.gateway.on('sensor_mode', (d) => node.send({topic: 'sensor_mode', payload: d}));
 
 		node.set_status();
 	}
