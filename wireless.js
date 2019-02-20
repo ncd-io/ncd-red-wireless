@@ -19,6 +19,7 @@ module.exports = function(RED) {
 			});
 			var modem = new wireless.Modem(serial);
 			gateway_pool[this.port] = new wireless.Gateway(modem);
+			gateway_pool[this.port].pan_id = false;
 		}
 		this.gateway = gateway_pool[this.port];
 		this.gateway.digi.report_rssi = config.rssi;
@@ -329,8 +330,10 @@ module.exports = function(RED) {
 					res.json(false);
 				});
 			});
-		}else{
+		}else if(gateway_pool[port].pan_id){
 			res.json({pan_id: gateway_pool[port].pan_id.toString(16)});
+		}else{
+			res.json({error: "no network ID"});
 		}
 	});
 	RED.httpAdmin.get("/ncd/wireless/sensors/list/:id", RED.auth.needsPermission('serial.read'), function(req,res) {
