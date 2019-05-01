@@ -2,6 +2,7 @@ const wireless = require("./index.js");
 const comms = require('ncd-red-comm');
 const sp = require('serialport');
 const Queue = require("promise-queue");
+const events = require("events");
 
 module.exports = function(RED) {
 	var gateway_pool = {};
@@ -13,7 +14,8 @@ module.exports = function(RED) {
 		this.baudRate = parseInt(config.baudRate);
 
 		this.sensor_pool = [];
-
+		this._emitter = new events.EventEmitter();
+		this.on = (e,c) => this._emitter.on(e, c);
 		if(typeof gateway_pool[this.port] == 'undefined'){
 			if(config.comm_type == 'serial'){
 				var comm = new comms.NcdSerial(this.port, this.baudRate);
@@ -50,7 +52,7 @@ module.exports = function(RED) {
 				done();
 			}
 		});
-
+		node.is_config = 3;
 		node.check_mode = function(cb){
 			node.gateway.digi.send.at_command("ID").then((res) => {
 				var pan_id = (res.data[0] << 8) | res.data[1];
@@ -61,12 +63,17 @@ module.exports = function(RED) {
 					node.is_config = 0;
 				}
 				if(cb) cb(node.is_config);
+				return node.is_config;
 			}).catch((err) => {
 				console.log(err);
 				node.is_config = 2;
 				if(cb) cb(node.is_config);
+				return node.is_config;
+			}).then((mode) => {
+				node._emitter.emit('mode_change', mode);
 			});
 		};
+
 		node.gateway.digi.serial.on('ready', () => {
 			node.check_mode((mode) => {
 				var pan_id = parseInt(config.pan_id, 16);
@@ -93,15 +100,21 @@ module.exports = function(RED) {
 		var statuses =[
 			{fill:"green",shape:"dot",text:"Ready"},
 			{fill:"yellow",shape:"ring",text:"Configuring"},
-			{fill:"red",shape:"dot",text:"Failed to Connect"}
+			{fill:"red",shape:"dot",text:"Failed to Connect"},
+			{fill:"green",shape:"ring",text:"Connecting..."}
 		];
+
 		node.set_status = function(){
 			node.status(statuses[node._gateway_node.is_config]);
 		};
+
 		node.gateway.on('sensor_data', (d) => node.send({topic: 'sensor_data', payload: d}));
 		node.gateway.on('sensor_mode', (d) => node.send({topic: 'sensor_mode', payload: d}));
 
 		node.set_status();
+		node._gateway_node.on('mode_change', (mode) => {
+			node.set_status();
+		});
 	}
 	RED.nodes.registerType("ncd-gateway-node", NcdGatewayNode);
 
