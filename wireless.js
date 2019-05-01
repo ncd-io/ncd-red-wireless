@@ -7,17 +7,31 @@ module.exports = function(RED) {
 	var gateway_pool = {};
 	function NcdGatewayConfig(config){
 		RED.nodes.createNode(this,config);
-        this.port = config.port;
+
+
+		this.port = config.comm_type == 'serial' ? config.port : config.tcp_port;
 		this.baudRate = parseInt(config.baudRate);
 
 		this.sensor_pool = [];
 
 		if(typeof gateway_pool[this.port] == 'undefined'){
-			var serial = new comms.NcdSerial(this.port, this.baudRate);
-			serial._emitter.on('error', (err) => {
-				console.log(err);
-			});
-			var modem = new wireless.Modem(serial);
+			if(config.comm_type == 'serial'){
+				var comm = new comms.NcdSerial(this.port, this.baudRate);
+				comm._emitter.on('error', (err) => {
+					console.log(err);
+				});
+			}else{
+				if(!config.ip_address){
+					console.log(config);
+					return;
+				}
+				var comm = new comms.NcdTCP(config.ip_address, this.port);
+				comm._emitter.on('error', (err) => {
+					console.log('tcp init error', err);
+				});
+			}
+
+			var modem = new wireless.Modem(comm);
 			gateway_pool[this.port] = new wireless.Gateway(modem);
 			gateway_pool[this.port].pan_id = false;
 		}
@@ -353,6 +367,14 @@ module.exports = function(RED) {
             }
         } else {
             res.json({});
+        }
+	});
+	RED.httpAdmin.get("/ncd/wireless/needs_input/:id", RED.auth.needsPermission('tcp.read'), function(req,res) {
+		var node = RED.nodes.getNode(req.params.id);
+        if (node != null) {
+            return {needs_input: node.raw_input};
+        } else {
+            res.json({needs_input: false});
         }
 	});
 };

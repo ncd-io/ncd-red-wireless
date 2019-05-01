@@ -193,6 +193,13 @@
                 $("#node-config-input-addr").autocomplete( "destroy" );
             } catch(err) {}
 			$('.ncd-dependent[sensor_type]').hide();
+            $('#node-input-connection').change(function(){
+                $.getJSON('ncd/wireless/needs_input/'+$(this).val(),function(data) {
+                    if(data.is_raw){
+                        that.needs_input = 1;
+                    }
+                });
+            });
 			$('#node-input-sensor_type').change(() => {
 				var type = $('#node-input-sensor_type').val();
 				$('.ncd-dependent').hide();
@@ -562,6 +569,9 @@
 		category: 'config',
 		defaults: {
 			name: {value: ""},
+            comm_type: {value: "serial"},
+            ip_address: {value: ""},
+            tcp_port: {value: 2101, validate:RED.validators.number()},
 			port: {value: ""},
 			baudRate: {value: 115200, validate:RED.validators.number()},
 			pan_id: {value: '7FFF', validate: NCD_validators.number_range(0, 0x7FFF, 16)},
@@ -572,6 +582,24 @@
 			return this.port+' ('+this.baudRate+')';
 		},
 		oneditprepare: function() {
+            if(typeof NCD_GatewayConfig == 'undefined'){
+                NCD_GatewayConfig = {};
+            }
+            NCD_GatewayConfig[this.id] = this;
+            $('#node-config-input-comm_type').change(function(){
+                switch($(this).val()){
+                    case 'tcp':
+                        $('.tcp-options').show();
+                        $('.serial-options').hide();
+                        break;
+                    case 'serial':
+                        $('.serial-options').show();
+                        $('.tcp-options').hide();
+                        break;
+                }
+                $('.serial-op')
+            }).find('[value='+this.comm_type+']').prop('selected', true);
+            //$('#node-input-comm_type').change();
 			var blist = [
                 {value:"115200",label:"115200",hasValue:false},
                 {value:"57600",label:"57600",hasValue:false},
@@ -640,15 +668,34 @@
 		<label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
 		<input type="text" id="node-config-input-name" placeholder="Name">
 	</div>
-	<div class="form-row">
-		<label for="node-config-input-port"><i class="fa fa-random"></i> Serial Port</label>
-		<input type="text" id="node-config-input-port" style="width:60%;" >
-		<a id="node-lookup-modems" class="btn"><i id="node-lookup-modems-icon" class="fa fa-search"></i></a>
-	</div>
-	<div class="form-row">
-		<label for="node-config-input-baudRate"><i class="icon-tag"></i> Baud Rate</label>
-		<input type="text" id="node-config-input-baudRate">
-	</div>
+    <div class="form-row">
+        <label for="node-config-input-comm_type"><i class="icon-tag"></i> Modem Type</label>
+        <select id="node-config-input-comm_type">
+            <option value="serial">USB (Serial)</option>
+            <option value="tcp">TCP (Ethernet/Network)</option>
+        </select>
+    </div>
+    <div class="tcp-options">
+        <div class="form-row">
+            <label for="node-config-input-tcp_port"><i class="fa fa-random"></i> TCP Port</label>
+    		<input type="text" id="node-config-input-tcp_port" style="width:60%;" >
+    	</div>
+        <div class="form-row">
+            <label for="node-config-input-ip_address"><i class="fa fa-random"></i> IP Address</label>
+    		<input type="text" id="node-config-input-ip_address" style="width:60%;" >
+    	</div>
+    </div>
+    <div class="serial-options">
+    	<div class="form-row">
+    		<label for="node-config-input-port"><i class="fa fa-random"></i> Serial Port</label>
+    		<input type="text" id="node-config-input-port" style="width:60%;" >
+    		<a id="node-lookup-modems" class="btn"><i id="node-lookup-modems-icon" class="fa fa-search"></i></a>
+    	</div>
+    	<div class="form-row">
+    		<label for="node-config-input-baudRate"><i class="icon-tag"></i> Baud Rate</label>
+    		<input type="text" id="node-config-input-baudRate">
+    	</div>
+    </div>
 	<div class="form-row">
 		<label for="node-config-input-pan_id"><i class="icon-tag"></i> Network ID (0 - 0x7FFF)</label>
 		0x<input type="text" id="node-config-input-pan_id" value="7FFF">
