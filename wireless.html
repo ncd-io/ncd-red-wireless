@@ -153,6 +153,11 @@
 			activ_interr_y: {value: 2, validate: RED.validators.number()},
 			activ_interr_z: {value: 4, validate: RED.validators.number()},
 			activ_interr_op: {value: 8, validate: RED.validators.number()},
+
+            filtering: {value: 0, validate: RED.validators.number()},
+            data_rate: {value: 5, validate: RED.validators.number()},
+            time_series: {value: Disabled, validate: RED.validators.number()},
+            reading_type: {value: 1, validate: RED.validators.number()}
 		},
 		inputs: 0,
 		outputs: 1,
@@ -494,6 +499,41 @@
 					<select id="node-input-activ_interr_op">
 						<option value="8">And</option>
 						<option value="0">Or</option>
+					</select>
+				</div>
+			</div>
+            <div class="ncd-dependent" data-sensor-40>
+				<div class="form-row">
+					<label for="node-input-filtering"><i class="icon-tag"></i> Data Filtering</label>
+					<select id="node-input-filtering">
+						<option value="1">Enable</option>
+						<option value="0">Disable</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-data_rate"><i class="icon-tag"></i> Data Rate</label>
+					<select id="node-input-data_rate">
+						<option value="5">400 Hz</option>
+						<option value="6">800 Hz</option>
+                        <option value="7">1600 Hz</option>
+						<option value="12">3200 Hz</option>
+                        <option value="13">6400 Hz</option>
+						<option value="14">12800 Hz</option>
+                        <option value="15">25600 Hz</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-time_series"><i class="icon-tag"></i> Time Series Data (unimplemented)</label>
+					<select id="node-input-time_series">
+						<option value="0">Disabled</option>
+						<option value="1">Enabled</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label for="node-input-reading_type"><i class="icon-tag"></i> Reading Type</label>
+					<select id="node-input-reading_type">
+						<option value="1">Acceleration</option>
+						<option value="2">Velocity</option>
 					</select>
 				</div>
 			</div>

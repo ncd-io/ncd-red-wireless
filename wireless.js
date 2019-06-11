@@ -212,6 +212,12 @@ module.exports = function(RED) {
 								promises.magnetometer_gain = node.config_gateway.config_set_amgt_magnet(mac, parseInt(config.amgt_mag));
 								promises.gyroscope_scale = node.config_gateway.config_set_amgt_gyro(mac, parseInt(config.amgt_gyro));
 								break;
+							case 40:
+								promises.filtering = node.config_gateway.config_set_filtering(mac, parseInt(config.filtering));
+								promises.data_rate = node.config_gateway.config_set_data_rate(mac, parseInt(config.data_rate));
+								promises.time_series = node.config_gateway.config_set_time_series(mac, parseInt(config.time_series));
+								promises.reading_type = node.config_gateway.config_set_reading_type(mac, parseInt(config.reading_type));
+								break;
 						}
 					}
 					promises.finish = new Promise((fulfill, reject) => {
