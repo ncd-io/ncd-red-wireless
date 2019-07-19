@@ -20,7 +20,7 @@ module.exports = function(RED) {
 			if(config.comm_type == 'serial'){
 				var comm = new comms.NcdSerial(this.port, this.baudRate);
 				comm._emitter.on('error', (err) => {
-					console.log(err);
+					console.log('gateway config serial error', err);
 				});
 			}else{
 				if(!config.ip_address){
@@ -41,16 +41,18 @@ module.exports = function(RED) {
 		this.gateway.digi.report_rssi = config.rssi;
 
 		var node = this;
-		this.on('close', (removed, done) => {
-			if(removed){
+		console.log('adding close handler now');
+		node.on('close', (done) => {
+			console.log('closing');
+			//if(removed){
 				node.gateway._emitter.removeAllListeners('sensor_data');
 				node.gateway.digi.serial.close(() => {
 					delete gateway_pool[this.port];
 					done();
 				});
-			}else{
-				done();
-			}
+			// }else{
+			// 	done();
+			// }
 		});
 		node.is_config = 3;
 		node.check_mode = function(cb){
@@ -86,6 +88,8 @@ module.exports = function(RED) {
 				}
 			});
 		});
+
+		node.check_mode();
 	}
 
 	RED.nodes.registerType("ncd-gateway-config", NcdGatewayConfig);
