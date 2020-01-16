@@ -145,7 +145,8 @@ module.exports = function(RED) {
 			PGM_NOW: {fill:"red",shape:"dot",text:"Configuring..."},
 			READY: {fill: "green", shape: "ring", text:"Config Complete"},
 			PGM_ERR: {fill:"red", shape:"ring", text:"Config Error"},
-			RUN: {fill:"green",shape:"dot",text:"Running"}
+			RUN: {fill:"green",shape:"dot",text:"Running"},
+			PUM: {fill:"yellow",shape:"ring",text:"Module was factory reset"}
 		};
 		var events = {};
 		var pgm_events = {};
@@ -269,7 +270,12 @@ module.exports = function(RED) {
 				});
 			});
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
-				node.status(modes[sensor.mode]);
+				if(sensor.mode in modes){
+					node.status(modes[sensor.mode]);
+				}
+				else{
+					console.log('Error: unrecognized sensor mode packet');
+				}
 				if(config.auto_config && sensor.mode == "PGM"){
 					_config(sensor);
 				}
@@ -286,7 +292,12 @@ module.exports = function(RED) {
 
 			this.pgm_on('sensor_mode', (sensor) => {
 				if(sensor.type == config.sensor_type){
-					node.status(modes[sensor.mode]);
+					if(sensor.mode in modes){
+						node.status(modes[sensor.mode]);
+					}
+					else{
+						console.log('Error: unrecognized sensor mode packet');
+					}
 					if(config.auto_config && sensor.mode == 'PGM'){
 						_config(sensor);
 					}
