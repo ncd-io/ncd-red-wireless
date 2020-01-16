@@ -182,7 +182,7 @@ module.exports = function(RED) {
 							power: node.gateway.config_powered_device(config.addr, 'power', parseInt(config.power)),
 							retries: node.gateway.config_powered_device(config.addr, 'retries', parseInt(config.retries)),
 							node_id: node.gateway.config_powered_device(config.addr, 'node_id', parseInt(config.node_id)),
-							delay: node.gateway.config_powered_device(config.addr, 'delay', ...int2Bytes(parseInt(config.delay), 3))
+							delay: node.gateway.config_powered_device(config.addr, 'delay', ...int2Bytes(parseInt(config.delay), 2))
 						};
 					}else{
 						var mac = sensor.mac;
