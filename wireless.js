@@ -18,11 +18,13 @@ module.exports = function(RED) {
 		this.on = (e,c) => this._emitter.on(e, c);
 		if(typeof gateway_pool[this.port] == 'undefined'){
 			if(config.comm_type == 'serial'){
+				this.key = config.port;
 				var comm = new comms.NcdSerial(this.port, this.baudRate);
 				comm._emitter.on('error', (err) => {
 					console.log('gateway config serial error', err);
 				});
 			}else{
+				this.key = config.ip_address+":"+config.tcp_port;
 				if(!config.ip_address){
 					console.log(config);
 					return;
@@ -34,10 +36,13 @@ module.exports = function(RED) {
 			}
 
 			var modem = new wireless.Modem(comm);
-			gateway_pool[this.port] = new wireless.Gateway(modem);
-			gateway_pool[this.port].pan_id = false;
+
+			gateway_pool[this.key] = new wireless.Gateway(modem);
+			gateway_pool[this.key].pan_id = false;
 		}
-		this.gateway = gateway_pool[this.port];
+
+		// this.gateway = gateway_pool[this.port];
+		this.gateway = gateway_pool[this.key];
 		this.gateway.digi.report_rssi = config.rssi;
 
 		var node = this;
