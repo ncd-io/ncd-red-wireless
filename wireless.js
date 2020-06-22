@@ -16,15 +16,19 @@ module.exports = function(RED) {
 		this.sensor_pool = [];
 		this._emitter = new events.EventEmitter();
 		this.on = (e,c) => this._emitter.on(e, c);
-		if(typeof gateway_pool[this.port] == 'undefined'){
+		if(config.comm_type == 'serial'){
+			this.key = config.port;
+		}
+		else{
+			this.key = config.ip_address+":"+config.tcp_port;
+		}
+		if(typeof gateway_pool[this.key] == 'undefined'){
 			if(config.comm_type == 'serial'){
-				this.key = config.port;
 				var comm = new comms.NcdSerial(this.port, this.baudRate);
 				comm._emitter.on('error', (err) => {
 					console.log('gateway config serial error', err);
 				});
 			}else{
-				this.key = config.ip_address+":"+config.tcp_port;
 				if(!config.ip_address){
 					console.log(config);
 					return;
