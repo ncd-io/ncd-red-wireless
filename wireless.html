@@ -60,7 +60,9 @@
 	<p>This node is primarily useful for debugging and configuring sensors. This node is equipped with a button on the flow that switches the modem between configuration and listening mode.</p>
 	<h3>Output</h3>
 	<p>Any time sensor data is received from any sensor on the network, this node will output a message containing all pertinant information as in the example below.</p>
-	<pre>
+  <h3>Input</h3>
+  <p>The Input connection to this Gateway node allows for sending data to devices.  The input connection expects the payload to be an object containging an address and data variable.  Address is a string representation of the destination device.  Data is a byte array of data to be transmitted as payload to that device.  Example "payload":{"address":"00:13:A2:00:01:02:03:04",data:[254,108,1]}</p>
+  <pre>
   msg = {
     topic: "sensor_data",
     payload: {
