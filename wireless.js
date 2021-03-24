@@ -122,11 +122,7 @@ module.exports = function(RED) {
 		};
 
 		node.on('input', function(msg){
-			console.log('input triggered: '+msg);
-			console.log('topic: '+msg.topic);
-			console.log('address: '+msg.payload.address);
-			console.log('data: '+msg.payload.data);
-			node.gateway.control_send(msg.payload.address, msg.payload.data).then(console.log).catch(console.log);
+			node.gateway.control_send(msg.payload.address, msg.payload.data).then().catch(console.log);
 		});
 
 		node.gateway.on('sensor_data', (d) => {
