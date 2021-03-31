@@ -321,8 +321,8 @@ module.exports = function(RED) {
 			if(msg.topic == 'config'){
 				_config();
 			}else{
-				node.gateway.send_control(config.sensor_type, config.addr, msg).then((m) => {
-					//console.log("complete", m);
+				node.gateway.send_arbitrary(config.addr, msg).then((m) => {
+					console.log("complete");
 				}).catch((err) => {
 					console.log("error", err);
 				});
