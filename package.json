@@ -1,6 +1,6 @@
 {
     "name": "ncd-red-wireless",
-    "version": "1.5.32",
+    "version": "1.5.33b",
     "description": "",
     "main": "index.js",
     "scripts": {
