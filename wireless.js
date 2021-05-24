@@ -242,6 +242,11 @@ module.exports = function(RED) {
 								promises.time_series = node.config_gateway.config_set_time_series(mac, parseInt(config.time_series));
 								promises.reading_type = node.config_gateway.config_set_reading_type(mac, parseInt(config.reading_type));
 								break;
+							case 44:
+								if(config.force_calibration_co2_auto_config){
+									promises.sensor_forced_calibration = node.config_gateway.config_set_sensor_forced_calibration(mac, parseInt(config.force_calibration_co2));
+								}
+								break;
 						}
 					}
 					promises.finish = new Promise((fulfill, reject) => {
