@@ -163,7 +163,15 @@
             filtering: {value: 0, validate: RED.validators.number()},
             data_rate: {value: 5, validate: RED.validators.number()},
             time_series: {value: 0, validate: RED.validators.number()},
-            reading_type: {value: 1, validate: RED.validators.number()}
+            reading_type: {value: 1, validate: RED.validators.number()},
+
+            output_data_rate_101: {value: 0},
+            sampling_duration_101: {value: 1, validate: NCD_validators.number_range(1, 255)},
+            x_axis_101: {value: ""},
+            y_axis_101: {value: ""},
+            z_axis_101: {value: ""},
+            sampling_interval_101: {value: 1},
+            full_scale_range_101: {value: 1}
 		},
 		inputs: 0,
 		outputs: 1,
@@ -339,18 +347,6 @@
 				$(this).click(handleClick);
 				handleClick.apply(this);
             });
-            // $('.ncd-config-toggle').click(function(){
-            //     console.log($(this));
-            //     console.log($(this).prop('checked'));
-            //     console.log($(this).data('target-id'));
-            //     if($(this).prop('checked') && $(this).data('target-id')){
-            //         $('#'+$(this).data('target-id')).prop('disabled', false);
-            //     }
-            //     else{
-            //         $('#'+$(this).data('target-id')).prop('disabled', true);
-            //     }
-            // });
-
 		},
 	});
 </script>
@@ -678,6 +674,59 @@
                 <div class="form-row">
                     <label for="node-input-force_calibration_co2"><i class="icon-tag"></i>  Value</label>
                     <input type="text" id="node-input-force_calibration_co2" placeholder="455" value="455">
+                </div>
+            </div>
+            <div class="ncd-dependent" data-sensor-101>
+                <hr>
+                <div class="form-row">
+                    <label for="node-input-output_data_rate_101"><i class="icon-tag"></i> Output data rate</label>
+                    <select id="node-input-output_data_rate_101">
+                        <option value="6">50Hz</option>
+                        <option value="7">100Hz</option>
+                        <option value="8">200Hz</option>
+                        <option value="9">400Hz</option>
+                        <option value="10">800Hz</option>
+                        <option value="11">1600Hz</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="node-input-sampling_duration_101"><i class="icon-tag"></i> Set Sampling Duration in seconds</label>
+                    <input type="text" id="node-input-sampling_duration_101">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-x_axis_101"><i class="icon-tag"></i> X Axis Enabled</label>
+                    <input type="checkbox" id="node-input-x_axis_101" value="1">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-y_axis_101"><i class="icon-tag"></i> Y Axis Enabled</label>
+                    <input type="checkbox" id="node-input-y_axis_101" value="2">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-z_axis_101"><i class="icon-tag"></i> Z Axis Enabled</label>
+                    <input type="checkbox" id="node-input-z_axis_101" value="4">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-sampling_interval_101"><i class="icon-tag"></i> Sampling interval</label>
+                    <select id="node-input-sampling_interval_101">
+                        <option value="0">5 Minutes</option>
+                        <option value="1">10 Minutes</option>
+                        <option value="2">15 Minutes</option>
+                        <option value="3">20 Minutes</option>
+                        <option value="4">30 Minutes</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="node-input-set_rtc_101"><i class="icon-tag"></i> Set RTC</label>
+                    <input type="checkbox" id="set_rtc_101" value="true">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-full_scale_range_101"><i class="icon-tag"></i> Full Scale Range</label>
+                    <select id="node-input-full_scale_range_101">
+                        <option value="0">+/- 2g</option>
+                        <option value="1">+/- 4g</option>
+                        <option value="2">+/- 8g</option>
+                        <option value="3">+/- 16g</option>
+                    </select>
                 </div>
             </div>
 			<div class="ncd-dependent" data-sensor-10000 data-sensor-10012>
