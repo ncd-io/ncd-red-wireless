@@ -239,13 +239,14 @@
 					"65": "DO and Temperature Sensor",
 					"66": "DO EC Salinity TDS and Temperature Sensor",
 					"67": "PAR Sensor",
-          "101": "Pro Vibration",
+                    "101": "Pro Vibration",
+                    "102": "Single Axis Vibration",
 					"200": "4-20mA Pass Through",
 					"202": "Weather Station",
 					"502": "C_50-27",
 					"505": "C_Current_1C",
 					"506": "C_Current_3C",
-        				"510": "GreenLight",
+        			"510": "GreenLight",
 					"10000": "4-Channel Relay",
 					"10006": "4-Channel 4-20 mA Input",
 					"10007": "4-Channel Current Monitor",
@@ -371,76 +372,77 @@
 	<div class="form-row">
 		<label for="node-input-sensor_type"><i class="icon-tag"></i> Sensor Type</label>
 		<select id="node-input-sensor_type">
-			<option value="1">Temperature and Humidity</option>
-			<option value="2">2ch Push Notification/Voltage Detection</option>
-			<option value="3">ADC/4-20 mA/DC Voltage</option>
-			<option value="4">Thermocouple</option>
-			<option value="5">Accel, Gyro, Magneto and Temperature</option>
-			<option value="6">Temperature and Barometeric Pressure</option>
-			<option value="7">Impact Detection</option>
-			<option value="8">Vibration</option>
-			<option value="9">Proximity</option>
-			<option value="10">Light</option>
-            		<option value="12">3-channel Thermocouple</option>
-			<option value="13">Current Monitor</option>
-            		<option value="14">10-Bit 1-Channel 4-20mA</option>
-            		<option value="15">10-Bit 1-Channel ADC</option>
-            		<option value="16">Soil Moisture Sensor</option>
-            		<option value="17">24-Bit AC Voltage Monitor</option>
-			<option value="18">Pulse/Frequency</option>
-            		<option value="19">2-channel 24-bit Current Monitor</option>
-            		<option value="20">Precision Pressure & Temperature (pA)</option>
-            		<option value="21">AMS Pressure & Temperature</option>
-			<option value="22">0-24V AC/DC Optically Isolated Inputs</option>
-            		<option value="23">2-channel Thermocouple</option>
-			<option value="24">Activity Detection</option>
-			<option value="25">Asset Monitor</option>
-            		<option value="26">Pressure & Temperature (PSI)</option>
-            		<option value="27">Environmental</option>
-            		<option value="28">3-Channel Current Monitor</option>
-            		<option value="29">Linear Displacement Sensor</option>
-            		<option value="30">Structural Monitoring Sensor</option>
-			<option value="31">Air Quality TVOC eCO2 Temperature and Humidity Sensor</option>
-            		<option value="32">Particulate Matter Sensor</option>
-			<option value="33">AC Current Detect Sensor</option>
-			<option value="34">Wireless Tank Level</option>
-            		<option value="35">One Channel Counter</option>
-			<option value="36">Two Channel Counter</option>
-			<option value="37">7 Channel Push Notification</option>
-            		<option value="39">RTD Temperature Sensor</option>
-           	 	<option value="40">Vibration w/Time Domain (partial support)</option>
-            		<option value="41">RPM Proximity Sensor</option>
-			<option value="42">0-24VDC Voltage Monitor</option>
-			<option value="43">Dual Temperature Humidity Current Detection Sensor</option>
-	    		<option value="44">Wireless CO2 Gas Sensor</option>
-			<option value="45">4-20mA 16-Bit Input Transmitter</option>
-			<option value="46">Motion Detection Sensor</option>
-			<option value="47">2 Channel RTD</option>
-			<option value="48">4-20mA 16-Bit Input Transmitter</option>
-			<option value="49">6 Channel Thermocouple Sensor</option>
-		    	<option value="50">Predictive Maintenance Sensor</option>
-			<option value="51">6 Channel Current Sensor</option>
-	    		<option value="52">2 Channel 4-20mA Receiver</option>
-			<option value="53">Air Quality CO2 and PM Sensor</option>
-			<option value="54">3 Channel RTD</option>
-			<option value="61">pH Temperature Sensor</option>
-			<option value="62">ORP Temperature Sensor</option>
-			<option value="63">pH and ORPTemperature Sensor</option>
-	    		<option value="64">EC Salinity TDS and Temperature Sensor</option>
-	    		<option value="65">DO and Temperature Sensor</option>
-	    		<option value="66">DO EC Salinity TDS and Temperature Sensor</option>
-	    		<option value="67">PAR Sensor</option>
-          <option value="101">Pro Vibration</option>
-	    		<option value="200">4-20mA Pass Through</option>
-	    		<option value="202">Weather Station</option>
-			<option value="502">C_50-27</option>
-			<option value="505">C_Current_1C</option>
-			<option value="506">C_Current_3C</option>
-            		<option value="510">GreenLight</option>
-			<option value="10000">4-Channel Relay</option>
-			<option value="10006">4-Channel 4-20 mA Input</option>
-			<option value="10007">4-Channel Current Monitor</option>
-			<option value="10012">2-Relay + 2-Input</option>
+            <option value="1">Temperature and Humidity</option>
+            <option value="2">2ch Push Notification/Voltage Detection</option>
+            <option value="3">ADC/4-20 mA/DC Voltage</option>
+            <option value="4">Thermocouple</option>
+            <option value="5">Accel, Gyro, Magneto and Temperature</option>
+            <option value="6">Temperature and Barometeric Pressure</option>
+            <option value="7">Impact Detection</option>
+            <option value="8">Vibration</option>
+            <option value="9">Proximity</option>
+            <option value="10">Light</option>
+            <option value="12">3-channel Thermocouple</option>
+            <option value="13">Current Monitor</option>
+            <option value="14">10-Bit 1-Channel 4-20mA</option>
+            <option value="15">10-Bit 1-Channel ADC</option>
+            <option value="16">Soil Moisture Sensor</option>
+            <option value="17">24-Bit AC Voltage Monitor</option>
+            <option value="18">Pulse/Frequency</option>
+            <option value="19">2-channel 24-bit Current Monitor</option>
+            <option value="20">Precision Pressure & Temperature (pA)</option>
+            <option value="21">AMS Pressure & Temperature</option>
+            <option value="22">0-24V AC/DC Optically Isolated Inputs</option>
+            <option value="23">2-channel Thermocouple</option>
+            <option value="24">Activity Detection</option>
+            <option value="25">Asset Monitor</option>
+            <option value="26">Pressure & Temperature (PSI)</option>
+            <option value="27">Environmental</option>
+            <option value="28">3-Channel Current Monitor</option>
+            <option value="29">Linear Displacement Sensor</option>
+            <option value="30">Structural Monitoring Sensor</option>
+            <option value="31">Air Quality TVOC eCO2 Temperature and Humidity Sensor</option>
+            <option value="32">Particulate Matter Sensor</option>
+            <option value="33">AC Current Detect Sensor</option>
+            <option value="34">Wireless Tank Level</option>
+            <option value="35">One Channel Counter</option>
+            <option value="36">Two Channel Counter</option>
+            <option value="37">7 Channel Push Notification</option>
+            <option value="39">RTD Temperature Sensor</option>
+            <option value="40">Vibration w/Time Domain (partial support)</option>
+            <option value="41">RPM Proximity Sensor</option>
+            <option value="42">0-24VDC Voltage Monitor</option>
+            <option value="43">Dual Temperature Humidity Current Detection Sensor</option>
+            <option value="44">Wireless CO2 Gas Sensor</option>
+            <option value="45">4-20mA 16-Bit Input Transmitter</option>
+            <option value="46">Motion Detection Sensor</option>
+            <option value="47">2 Channel RTD</option>
+            <option value="48">4-20mA 16-Bit Input Transmitter</option>
+            <option value="49">6 Channel Thermocouple Sensor</option>
+            <option value="50">Predictive Maintenance Sensor</option>
+            <option value="51">6 Channel Current Sensor</option>
+            <option value="52">2 Channel 4-20mA Receiver</option>
+            <option value="53">Air Quality CO2 and PM Sensor</option>
+            <option value="54">3 Channel RTD</option>
+            <option value="61">pH Temperature Sensor</option>
+            <option value="62">ORP Temperature Sensor</option>
+            <option value="63">pH and ORPTemperature Sensor</option>
+            <option value="64">EC Salinity TDS and Temperature Sensor</option>
+            <option value="65">DO and Temperature Sensor</option>
+            <option value="66">DO EC Salinity TDS and Temperature Sensor</option>
+            <option value="67">PAR Sensor</option>
+            <option value="101">Pro Vibration</option>
+            <option value="102">Single Axis Vibration</option>
+            <option value="200">4-20mA Pass Through</option>
+            <option value="202">Weather Station</option>
+            <option value="502">C_50-27</option>
+            <option value="505">C_Current_1C</option>
+            <option value="506">C_Current_3C</option>
+            <option value="510">GreenLight</option>
+            <option value="10000">4-Channel Relay</option>
+            <option value="10006">4-Channel 4-20 mA Input</option>
+            <option value="10007">4-Channel Current Monitor</option>
+            <option value="10012">2-Relay + 2-Input</option>
 		</select>
 	</div>
 	<div class="section">
@@ -676,7 +678,7 @@
                     <input type="text" id="node-input-force_calibration_co2" placeholder="455" value="455">
                 </div>
             </div>
-            <div class="ncd-dependent" data-sensor-101>
+            <div class="ncd-dependent" data-sensor-101 data-sensor-102>
                 <hr>
                 <div class="form-row">
                     <label for="node-input-output_data_rate_101"><i class="icon-tag"></i> Output data rate</label>
@@ -692,18 +694,6 @@
                 <div class="form-row">
                     <label for="node-input-sampling_duration_101"><i class="icon-tag"></i> Set Sampling Duration in seconds</label>
                     <input type="text" id="node-input-sampling_duration_101">
-                </div>
-                <div class="form-row">
-                    <label for="node-input-x_axis_101"><i class="icon-tag"></i> X Axis Enabled</label>
-                    <input type="checkbox" id="node-input-x_axis_101" value="1">
-                </div>
-                <div class="form-row">
-                    <label for="node-input-y_axis_101"><i class="icon-tag"></i> Y Axis Enabled</label>
-                    <input type="checkbox" id="node-input-y_axis_101" value="2">
-                </div>
-                <div class="form-row">
-                    <label for="node-input-z_axis_101"><i class="icon-tag"></i> Z Axis Enabled</label>
-                    <input type="checkbox" id="node-input-z_axis_101" value="4">
                 </div>
                 <div class="form-row">
                     <label for="node-input-sampling_interval_101"><i class="icon-tag"></i> Sampling interval</label>
@@ -729,6 +719,22 @@
                     </select>
                 </div>
             </div>
+
+            <div class="ncd-dependent" data-sensor-101>
+                <div class="form-row">
+                    <label for="node-input-x_axis_101"><i class="icon-tag"></i> X Axis Enabled</label>
+                    <input type="checkbox" id="node-input-x_axis_101" value="1">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-y_axis_101"><i class="icon-tag"></i> Y Axis Enabled</label>
+                    <input type="checkbox" id="node-input-y_axis_101" value="2">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-z_axis_101"><i class="icon-tag"></i> Z Axis Enabled</label>
+                    <input type="checkbox" id="node-input-z_axis_101" value="4">
+                </div>
+            </div>
+
 			<div class="ncd-dependent" data-sensor-10000 data-sensor-10012>
 				<div class="form-row">
 					<button id="config_sensor">Configure Now</button>
