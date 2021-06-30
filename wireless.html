@@ -1,4 +1,3 @@
-<!-- test update -->
 <script type="text/javascript">
     RED.nodes.registerType('ncd-gateway-node',{
         category: 'NCD',
@@ -8,12 +7,16 @@
         defaults: {
 			name: {value: ""},
 			connection: {value: "", type: "ncd-gateway-config"},
+			unknown_devices: {value:0}
 		},
 		inputs: 1,
 		outputs: 1,
 		label: function() {
             return this.name || "Wireless Gateway";
         },
+		oneditsave: function(){
+			this.outputs = $("#node-input-unknown_devices").is(':checked') ? 2 : 1;
+		},
 		button: {
             enabled: function() {
                 return true;
@@ -52,6 +55,10 @@
 	<div class="form-row">
 		<label for="node-input-connection"><i class="icon-tag"></i> Serial Device</label>
 		<select id="node-input-connection"></select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-unknown_devices"><i class="icon-tag"></i> Output data from Unknown Devices</label>
+		<input type="checkbox" id="node-input-unknown_devices" value="1">
 	</div>
 </script>
 
