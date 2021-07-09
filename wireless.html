@@ -4,10 +4,12 @@
         color: '#a6bbcf',
 		icon: "serial.png",
 		paletteLabel: "Wireless Gateway",
+    outputLabels: ["Parsed","Unknown"],
         defaults: {
 			name: {value: ""},
 			connection: {value: "", type: "ncd-gateway-config"},
-			unknown_devices: {value:0}
+			unknown_devices: {value:0},
+      outputs:{value:1}
 		},
 		inputs: 1,
 		outputs: 1,

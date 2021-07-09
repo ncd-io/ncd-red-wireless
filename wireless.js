@@ -133,6 +133,12 @@ module.exports = function(RED) {
 			node.set_status();
 			node.send({topic: 'sensor_mode', payload: d});
 		});
+		node.gateway.on('receive_packet-unknown_device',(d)=>{
+			node.set_status();
+			msg1 = {topic:'somethingTopic',payload:"something"};
+			console.log("output should have fired");
+			node.send([null,{topic: 'unknown_data', payload:d}]);
+		});
 
 		node.set_status();
 		node._gateway_node.on('mode_change', (mode) => {
