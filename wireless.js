@@ -133,6 +133,12 @@ module.exports = function(RED) {
 			node.set_status();
 			node.send({topic: 'sensor_mode', payload: d});
 		});
+		node.gateway.on('receive_packet-unknown_device',(d)=>{
+			node.set_status();
+			msg1 = {topic:'somethingTopic',payload:"something"};
+			console.log("output should have fired");
+			node.send([null,{topic: 'unknown_data', payload:d}]);
+		});
 
 		node.set_status();
 		node._gateway_node.on('mode_change', (mode) => {
@@ -248,11 +254,20 @@ module.exports = function(RED) {
 								}
 								break;
 							case 101:
-								promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
-								promises.config_set_sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
+								if(config.output_data_rate_101_active){
+									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
+								}
+								if(config.config_set_sampling_duration_101_active){
+									promises.config_set_sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
+								}
+
 								promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
-								promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
-								promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
+								if(config.sampling_interval_101_active){
+									promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
+								}
+								if(config.full_scale_range_101_active){
+									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
+								}
 								promises.full_scale_range_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 						}
