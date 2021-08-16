@@ -207,11 +207,20 @@ module.exports = function(RED) {
 						var mac = sensor.mac;
 						var promises = {
 							destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
-							id_and_delay: node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
-							power: node.config_gateway.config_set_power(mac, parseInt(config.power)),
-							retries: node.config_gateway.config_set_retries(mac, parseInt(config.retries)),
+							// id_and_delay: node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
+							// power: node.config_gateway.config_set_power(mac, parseInt(config.power)),
+							// retries: node.config_gateway.config_set_retries(mac, parseInt(config.retries)),
 							network_id: node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
 						};
+						if(config.node_id_delay_active){
+							promises.id_and_delay = node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay));
+						}
+						if(config.power_active){
+							promises.power = node.config_gateway.config_set_power(mac, parseInt(config.power));
+						}
+						if(config.retries_active){
+							promises.retries = node.config_gateway.config_set_retries(mac, parseInt(config.retries));
+						}
 						var change_detection = [13, 10, 3];
 						if(change_detection.indexOf(sensor.type) > -1){
 							promises.change_detection = node.config_gateway.config_set_change_detection(mac, config.change_enabled ? 1 : 0, parseInt(config.change_pr), parseInt(config.change_interval));
@@ -260,15 +269,22 @@ module.exports = function(RED) {
 								if(config.config_set_sampling_duration_101_active){
 									promises.config_set_sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
 								}
-
-								promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
+								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
+									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
+								}
 								if(config.sampling_interval_101_active){
 									promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
 								}
 								if(config.full_scale_range_101_active){
 									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								}
-								promises.full_scale_range_101 = node.config_gateway.config_set_rtc_101(mac);
+								if(config.mode_80_active){
+									promises.mode = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.mode_80));
+								}
+								if(config.filter_80_active){
+									promises.filter = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.filter_80));
+								}
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 101:
 								if(config.output_data_rate_101_active){
@@ -285,7 +301,7 @@ module.exports = function(RED) {
 								if(config.full_scale_range_101_active){
 									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								}
-								promises.full_scale_range_101 = node.config_gateway.config_set_rtc_101(mac);
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 102:
 								if(config.output_data_rate_101_active){
@@ -302,7 +318,7 @@ module.exports = function(RED) {
 								// if(config.full_scale_range_101_active){
 								// 	promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								// }
-								promises.full_scale_range_101 = node.config_gateway.config_set_rtc_101(mac);
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 						}
 					}
