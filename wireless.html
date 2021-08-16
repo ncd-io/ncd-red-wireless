@@ -151,10 +151,9 @@
 			sensor_type: {value: ""},
 			auto_config: {value: ""},
 
-            node_id_active: {value: ""},
+            node_id_delay_active: {value: ""},
 			node_id: {value: 0, validate: NCD_validators.number_range(0, 255)},//0 - 255
 
-            delay_active: {value: ""},
 			delay: {value: 300, validate: NCD_validators.number_range(1, 16777215)},//1 - 16777215
 
 			destination: {value: '0000FFFF', validate: NCD_validators.number_range(0, 0xFFFFFFFF, 16)},//(0 - 0xFFFFFFFF)
@@ -201,6 +200,12 @@
             data_rate: {value: 5, validate: RED.validators.number()},
             time_series: {value: 0, validate: RED.validators.number()},
             reading_type: {value: 1, validate: RED.validators.number()},
+
+            mode_80_active: {value: ""},
+            mode_80: {value: 0},
+            filter_80_active: {value: ""},
+            filter_80: {value: 0},
+
 
             output_data_rate_101_active: {value: ""},
             output_data_rate_101: {value: 0},
@@ -382,11 +387,29 @@
 			});
             $('.ncd-config-toggle').each(function(){
                 var handleClick = function(){
-                    if($(this).prop('checked') && $(this).data('target-id')){
-                        $('#'+$(this).data('target-id')).prop('disabled', false);
+                    // if($(this).prop('checked') && $(this).data('target-id')) {
+                    //     $('#'+$(this).data('target-id')).prop('disabled', false);
+                    // }
+                    // else{
+                    //     $('#'+$(this).data('target-id')).prop('disabled', true);
+                    // }
+
+                    if($(this).prop('checked')){
+                        if($(this).data('target-id')){
+                            $('#'+$(this).data('target-id')).prop('disabled', false);
+                        }
+                        if($(this).data('target-class')){
+                            $('.'+$(this).data('target-class')).prop('disabled', false);
+                        }
                     }
                     else{
-                        $('#'+$(this).data('target-id')).prop('disabled', true);
+                        if($(this).data('target-id')){
+                            $('#'+$(this).data('target-id')).prop('disabled', true);
+                        }
+                        if($(this).data('target-class')){
+                            $('.'+$(this).data('target-class')).prop('disabled', true);
+                        }
+                        // $('#'+$(this).data('target-id')).prop('disabled', true);
                     }
 				}
 				$(this).click(handleClick);
@@ -508,25 +531,18 @@
                 0x<input type="text" id="node-input-pan_id" value="7FFF">
             </div>
             <div class="form-row ncd-active-check">
-                <strong>Node ID</strong>
+                <strong>Node ID and Delay</strong>
                 <div>
-                    <label for="node-input-node_id_active">Active:</label>
-                    <input type="checkbox" id="node-input-node_id_active" class="ncd-config-toggle" data-target-id="node-input-node_id" value="1">
+                    <label for="node-input-node_id_delay_active">Active:</label>
+                    <input type="checkbox" id="node-input-node_id_delay_active" class="ncd-config-toggle" data-target-class="node-input-node_id_delay" value="1">
                 </div>
                 <div>
-                    <label for="node-input-node_id"><i class="icon-tag"></i>Value:</label>
-                    <input type="text" id="node-input-node_id">
-                </div>
-            </div>
-            <div class="form-row ncd-active-check">
-                <strong>Delay</strong>
-                <div>
-                    <label for="node-input-delay_active">Active:</label>
-                    <input type="checkbox" id="node-input-delay_active" class="ncd-config-toggle" data-target-id="node-input-delay" value="1">
+                    <label for="node-input-node_id"><i class="icon-tag"></i>Node ID:</label>
+                    <input type="text" id="node-input-node_id" class="node-input-node_id_delay">
                 </div>
                 <div>
-                    <label for="node-input-delay"><i class="icon-tag"></i>Value:</label>
-                    <input type="text" id="node-input-delay">
+                    <label for="node-input-delay"><i class="icon-tag"></i>Delay:</label>
+                    <input type="text" id="node-input-delay" class="node-input-node_id_delay">
                 </div>
             </div>
             <div class="form-row ncd-active-check">
@@ -547,7 +563,7 @@
                 </div>
             </div>
             <div class="form-row ncd-active-check">
-                <strong>Power</strong>
+                <strong>Retries</strong>
                 <div>
                     <label for="node-input-retries_active">Active:</label>
                     <input type="checkbox" id="node-input-retries_active" class="ncd-config-toggle" data-target-id="node-input-retries" value="1">
@@ -754,6 +770,40 @@
                     <input type="text" id="node-input-force_calibration_co2" placeholder="455" value="455">
                 </div>
             </div>
+
+            <div class="ncd-dependent" data-sensor-80>
+                <hr>
+                <div class="form-row ncd-active-check">
+                    <strong>Mode</strong>
+                    <div>
+                        <label for="node-input-mode_80_active"><i class="icon-tag"></i>Active:</label>
+                        <input type="checkbox" id="node-input-mode_80_active" class="ncd-config-toggle" data-target-id="node-input-mode_80" value="1">
+                    </div>
+                    <div>
+                        <label for="node-input-mode_80"><i class="icon-tag"></i>Value:</label>
+                        <select id="node-input-mode_80">
+                            <option value="0">Processed</option>
+                            <option value="1">Raw</option>
+                            <option value="2">Processed + Raw on demand</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row ncd-active-check">
+                    <strong>Set Sampling Duration in Seconds</strong>
+                    <div>
+                        <label for="node-input-filter_80_active">Active:</label>
+                        <input type="checkbox" id="node-input-filter_80_active" class="ncd-config-toggle" data-target-id="node-input-filter_80" value="1">
+                    </div>
+                    <div>
+                        <label for="node-input-filter_80"><i class="icon-tag"></i>Value:</label>
+                        <select id="node-input-filter_80">
+                            <option value="0">Disabled</option>
+                            <option value="1">Enabled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-101 data-sensor-102>
                 <hr>
                 <div class="form-row ncd-active-check">
