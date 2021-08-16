@@ -260,15 +260,16 @@ module.exports = function(RED) {
 								if(config.config_set_sampling_duration_101_active){
 									promises.config_set_sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
 								}
-
-								promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
+								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
+									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
+								}
 								if(config.sampling_interval_101_active){
 									promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
 								}
 								if(config.full_scale_range_101_active){
 									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								}
-								promises.full_scale_range_101 = node.config_gateway.config_set_rtc_101(mac);
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 101:
 								if(config.output_data_rate_101_active){
@@ -285,7 +286,7 @@ module.exports = function(RED) {
 								if(config.full_scale_range_101_active){
 									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								}
-								promises.full_scale_range_101 = node.config_gateway.config_set_rtc_101(mac);
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 102:
 								if(config.output_data_rate_101_active){
@@ -302,7 +303,7 @@ module.exports = function(RED) {
 								// if(config.full_scale_range_101_active){
 								// 	promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								// }
-								promises.full_scale_range_101 = node.config_gateway.config_set_rtc_101(mac);
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 						}
 					}
