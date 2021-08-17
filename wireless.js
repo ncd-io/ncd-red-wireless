@@ -279,10 +279,10 @@ module.exports = function(RED) {
 									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								}
 								if(config.mode_80_active){
-									promises.mode = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.mode_80));
+									promises.mode = node.config_gateway.config_set_operation_mode_80(mac, parseInt(config.mode_80));
 								}
 								if(config.filter_80_active){
-									promises.filter = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.filter_80));
+									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
 								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
@@ -303,10 +303,10 @@ module.exports = function(RED) {
 									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								}
 								if(config.mode_80_active){
-									promises.mode = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.mode_80));
+									promises.mode = node.config_gateway.config_set_operation_mode_80(mac, parseInt(config.mode_80));
 								}
 								if(config.filter_80_active){
-									promises.filter = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.filter_80));
+									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
 								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
