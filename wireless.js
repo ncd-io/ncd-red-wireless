@@ -165,7 +165,9 @@ module.exports = function(RED) {
 			READY: {fill: "green", shape: "ring", text:"Config Complete"},
 			PGM_ERR: {fill:"red", shape:"ring", text:"Config Error"},
 			RUN: {fill:"green",shape:"dot",text:"Running"},
-			PUM: {fill:"yellow",shape:"ring",text:"Module was factory reset"}
+			PUM: {fill:"yellow",shape:"ring",text:"Module was factory reset"},
+			ACK: {fill:"green",shape:"ring",text:"Configuration Acknowledged"},
+			FLY: {fill:"yellow",shape:"ring",text:"On the fly configuration started"}
 		};
 		var events = {};
 		var pgm_events = {};
@@ -385,6 +387,7 @@ module.exports = function(RED) {
 				});
 			});
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
+				console.log(sensor.mode);
 				if(sensor.mode in modes){
 					node.status(modes[sensor.mode]);
 				}
