@@ -803,6 +803,31 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-row ncd-active-check">
+                    <strong>Measurement Mode</strong>
+                    <div>
+                        <label for="node-input-measurement_mode_80_active">Active:</label>
+                        <input type="checkbox" id="node-input-measurement_mode_80_active" class="ncd-config-toggle" data-target-id="node-input-measurement_mode_80" value="1">
+                    </div>
+                    <div>
+                        <label for="node-input-measurement_mode_80"><i class="icon-tag"></i>Value:</label>
+                        <select id="node-input-measurement_mode_80">
+                            <option value="0">Processed data, acc in mg, velocity in mm/sec and displacement in mm</option>
+                            <option value="1">Processed data, acc in ms^2, velocity in inch/sec and displacement in milli</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row ncd-active-check">
+                    <strong>Set On Request Timeout in seconds</strong>
+                    <div>
+                        <label for="node-input-on_request_timeout_80_active">Active:</label>
+                        <input type="checkbox" id="node-input-on_request_timeout_80_active" class="ncd-config-toggle" data-target-id="node-input-on_request_timeout_80" value="1">
+                    </div>
+                    <div>
+                        <label for="node-input-on_request_timeout_80"><i class="icon-tag"></i>Value:</label>
+                        <input type="text" id="node-input-on_request_timeout_80">
+                    </div>
+                </div>
             </div>
 
             <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-101 data-sensor-102>
