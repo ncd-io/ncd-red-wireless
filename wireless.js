@@ -165,7 +165,9 @@ module.exports = function(RED) {
 			READY: {fill: "green", shape: "ring", text:"Config Complete"},
 			PGM_ERR: {fill:"red", shape:"ring", text:"Config Error"},
 			RUN: {fill:"green",shape:"dot",text:"Running"},
-			PUM: {fill:"yellow",shape:"ring",text:"Module was factory reset"}
+			PUM: {fill:"yellow",shape:"ring",text:"Module was factory reset"},
+			ACK: {fill:"green",shape:"ring",text:"Configuration Acknowledged"},
+			FLY: {fill:"yellow",shape:"ring",text:"On the fly configuration started"}
 		};
 		var events = {};
 		var pgm_events = {};
@@ -284,6 +286,12 @@ module.exports = function(RED) {
 								if(config.filter_80_active){
 									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
 								}
+								if(config.measurement_mode_80_active){
+									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
+								}
+								if(config.on_request_timeout_80_active){
+									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
+								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 81:
@@ -308,6 +316,12 @@ module.exports = function(RED) {
 								if(config.filter_80_active){
 									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
 								}
+								if(config.measurement_mode_80_active){
+									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
+								}
+								if(config.on_request_timeout_80_active){
+									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
+								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 101:
@@ -317,8 +331,9 @@ module.exports = function(RED) {
 								if(config.sampling_duration_101_active){
 									promises.sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
 								}
-
-								promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
+								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
+									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
+								}
 								if(config.sampling_interval_101_active){
 									promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
 								}
@@ -385,6 +400,7 @@ module.exports = function(RED) {
 				});
 			});
 			this.pgm_on('sensor_mode-'+config.addr, (sensor) => {
+				console.log(sensor.mode);
 				if(sensor.mode in modes){
 					node.status(modes[sensor.mode]);
 				}
