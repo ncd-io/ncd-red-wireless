@@ -154,7 +154,7 @@
             node_id_delay_active: {value: ""},
 			node_id: {value: 0, validate: NCD_validators.number_range(0, 255)},//0 - 255
 
-			delay: {value: 300, validate: NCD_validators.number_range(1, 16777215)},//1 - 16777215
+			delay: {value: 300, validate: NCD_validators.number_range(0, 16777215)},//1 - 16777215
 
 			destination: {value: '0000FFFF', validate: NCD_validators.number_range(0, 0xFFFFFFFF, 16)},//(0 - 0xFFFFFFFF)
 
