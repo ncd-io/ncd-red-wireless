@@ -154,7 +154,7 @@
             node_id_delay_active: {value: ""},
 			node_id: {value: 0, validate: NCD_validators.number_range(0, 255)},//0 - 255
 
-			delay: {value: 300, validate: NCD_validators.number_range(1, 16777215)},//1 - 16777215
+			delay: {value: 300, validate: NCD_validators.number_range(0, 16777215)},//1 - 16777215
 
 			destination: {value: '0000FFFF', validate: NCD_validators.number_range(0, 0xFFFFFFFF, 16)},//(0 - 0xFFFFFFFF)
 
@@ -279,6 +279,7 @@
 					"52": "2 Channel 4-20mA Receiver",
 					"53": "Air Quality CO2 and PM Sensor",
 					"54": "3 Channel RTD",
+          "56": "2 Channel 0-10VDC Receiver",
 					"61": "pH Temperature Sensor",
 					"62": "ORP Temperature Sensor",
 					"63": "pH and ORPTemperature Sensor",
@@ -492,6 +493,7 @@
             <option value="52">2 Channel 4-20mA Receiver</option>
             <option value="53">Air Quality CO2 and PM Sensor</option>
             <option value="54">3 Channel RTD</option>
+            <option value="56">2 Channel 0-10VDC Receiver</option>
             <option value="61">pH Temperature Sensor</option>
             <option value="62">ORP Temperature Sensor</option>
             <option value="63">pH and ORPTemperature Sensor</option>
@@ -500,6 +502,7 @@
             <option value="66">DO EC Salinity TDS and Temperature Sensor</option>
             <option value="67">PAR Sensor</option>
             <option value="69">Soil Moisture Temperature and EC Sensor</option>
+            <option value="72">SDI-12 Wireless</option>
             <option value="80">One Channel Vibration Plus</option>
             <option value="81">Two Channel Vibration Plus</option>
             <option value="101">Pro Vibration</option>

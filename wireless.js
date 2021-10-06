@@ -40,7 +40,6 @@ module.exports = function(RED) {
 			}
 
 			var modem = new wireless.Modem(comm);
-
 			gateway_pool[this.key] = new wireless.Gateway(modem);
 			gateway_pool[this.key].pan_id = false;
 		}
@@ -96,6 +95,12 @@ module.exports = function(RED) {
 					});
 				}
 			});
+			node.gateway.digi.send.at_command('SL').then((res) => {
+				node.gateway.modem_mac = '00:13:A2:00:'+toMac(res.data);
+			}).catch((err) => {
+				console.log(err);
+			});
+
 		});
 
 		node.check_mode();
@@ -143,6 +148,7 @@ module.exports = function(RED) {
 		node.set_status();
 		node._gateway_node.on('mode_change', (mode) => {
 			node.set_status();
+			node.send({topic: 'modem_mac', payload: this.gateway.modem_mac});
 		});
 	}
 	RED.nodes.registerType("ncd-gateway-node", NcdGatewayNode);
@@ -390,9 +396,11 @@ module.exports = function(RED) {
 		node._sensor_config = _config;
 		if(config.addr){
 			config.addr = config.addr.toLowerCase();
+
 			RED.nodes.getNode(config.connection).sensor_pool.push(config.addr);
 			this.gtw_on('sensor_data-'+config.addr, (data) => {
 				node.status(modes.RUN);
+				data.modem_mac = this.gateway.modem_mac;
 				node.send({
 					topic: 'sensor_data',
 					data: data,
@@ -414,6 +422,7 @@ module.exports = function(RED) {
 		}else if(config.sensor_type){
 			this.gtw_on('sensor_data-'+config.sensor_type, (data) => {
 				node.status(modes.RUN);
+				data.modem_mac = this.gateway.modem_mac;
 				node.send({
 					topic: 'sensor_data',
 					data: data,
@@ -580,4 +589,8 @@ function int2Bytes(i, l){
 		}
 	}
 	return bytes;
+}
+function toHex(n){return ('00' + n.toString(16)).substr(-2);}
+function toMac(arr){
+	return arr.reduce((h,c,i) => {return ((i==1?toHex(h):h)+':'+toHex(c)).toUpperCase();});
 }
