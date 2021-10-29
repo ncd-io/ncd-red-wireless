@@ -330,6 +330,10 @@ module.exports = function(RED) {
 								}
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
+							case 82:
+								if(config.current_calibration_82_active){
+									promises.current_calibration_82 = node.config_gateway.config_set_current_calibration_82(mac, parseInt(config.current_calibration_82));
+								}
 							case 101:
 								if(config.output_data_rate_101_active){
 									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));

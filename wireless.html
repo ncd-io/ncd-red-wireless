@@ -206,7 +206,8 @@
             filter_80_active: {value: ""},
             filter_80: {value: 0},
 
-
+            current_calibration_82:{Value:0},
+            current_calibration_82_active:{Value:""},
             output_data_rate_101_active: {value: ""},
             output_data_rate_101: {value: 0},
             sampling_duration_101_active: {value: ""},
@@ -932,6 +933,23 @@
                     </div>
                 </div>
             </div>
+
+            <div class="ncd-dependent" data-sensor-82>
+                <div class="form-row ncd-active-check">
+                    <strong>Set Current Calibration Value</strong>
+                    <div>
+                        <label for="node-input-current_calibration_82_active">Active:</label>
+                        <input type="checkbox" id="node-input-current_calibration_82_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_82" value="1">
+                    </div>
+                    <div>
+                        <label for="node-input-current_calibration_82"><i class="icon-tag"></i>Value:</label>
+                        <input type="text" id="node-input-current_calibration_82">
+                    </div>
+                </div>
+
+            </div>
+
+
 			<div class="ncd-dependent" data-sensor-10000 data-sensor-10012>
 				<div class="form-row">
 					<button id="config_sensor">Configure Now</button>
