@@ -301,11 +301,17 @@ module.exports = function(RED) {
 								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 81:
-								if(config.output_data_rate_101_active){
-									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
+								if(config.output_data_rate_p1_81_active){
+									promises.output_data_rate_p1_81 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_p1_81));
 								}
-								if(config.sampling_duration_101_active){
-									promises.sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
+								if(config.output_data_rate_p2_81_active){
+									promises.output_data_rate_p2_81 = node.config_gateway.config_set_output_data_rate_p2_81(mac, parseInt(config.output_data_rate_p2_81_active));
+								}
+								if(config.sampling_duration_p1_81_active){
+									promises.sampling_duration_p1_81 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_p1_81));
+								}
+								if(config.sampling_duration_p2_81_active){
+									promises.sampling_duration_p2_81 = node.config_gateway.config_set_sampling_duration_p2_81(mac, parseInt(config.sampling_duration_p2_81));
 								}
 								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
 									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
