@@ -40,6 +40,7 @@ module.exports = function(RED) {
 			}
 
 			var modem = new wireless.Modem(comm);
+
 			gateway_pool[this.key] = new wireless.Gateway(modem);
 			gateway_pool[this.key].pan_id = false;
 		}
@@ -95,12 +96,6 @@ module.exports = function(RED) {
 					});
 				}
 			});
-			node.gateway.digi.send.at_command('SL').then((res) => {
-				node.gateway.modem_mac = '00:13:A2:00:'+toMac(res.data);
-			}).catch((err) => {
-				console.log(err);
-			});
-
 		});
 
 		node.check_mode();
@@ -148,7 +143,6 @@ module.exports = function(RED) {
 		node.set_status();
 		node._gateway_node.on('mode_change', (mode) => {
 			node.set_status();
-			node.send({topic: 'modem_mac', payload: this.gateway.modem_mac});
 		});
 	}
 	RED.nodes.registerType("ncd-gateway-node", NcdGatewayNode);
@@ -185,7 +179,7 @@ module.exports = function(RED) {
 			events[event] = cb;
 			this.config_gateway.on(event, cb);
 		};
-		function _config(sensor){
+		function _config(sensor, otf = false){
 			return new Promise((top_fulfill, top_reject) => {
 
 				var success = {};
@@ -213,6 +207,9 @@ module.exports = function(RED) {
 						};
 					}else{
 						var mac = sensor.mac;
+						console.log('!_!_!_!_!_!_!__ijakdjkfjadsjfklasd');
+						console.log(mac);
+						console.log(parseInt(config.pan_id, 16));
 						var promises = {
 							destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
 							// id_and_delay: node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
@@ -298,20 +295,14 @@ module.exports = function(RED) {
 								if(config.on_request_timeout_80_active){
 									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								// promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 81:
-								if(config.output_data_rate_p1_81_active){
-									promises.output_data_rate_p1_81 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_p1_81));
+								if(config.output_data_rate_101_active){
+									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
 								}
-								if(config.output_data_rate_p2_81_active){
-									promises.output_data_rate_p2_81 = node.config_gateway.config_set_output_data_rate_p2_81(mac, parseInt(config.output_data_rate_p2_81));
-								}
-								if(config.sampling_duration_p1_81_active){
-									promises.sampling_duration_p1_81 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_p1_81));
-								}
-								if(config.sampling_duration_p2_81_active){
-									promises.sampling_duration_p2_81 = node.config_gateway.config_set_sampling_duration_p2_81(mac, parseInt(config.sampling_duration_p2_81));
+								if(config.sampling_duration_101_active){
+									promises.sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
 								}
 								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
 									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
@@ -332,14 +323,10 @@ module.exports = function(RED) {
 									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
 								}
 								if(config.on_request_timeout_80_active){
-									promises.on_request_timeout = node.config_gateway.config_set_on_request_timeout_80(mac, parseInt(config.on_request_timeout_80));
+									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								// promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
-							case 82:
-								if(config.current_calibration_82_active){
-									promises.current_calibration_82 = node.config_gateway.config_set_current_calibration_82(mac, parseInt(config.current_calibration_82));
-								}
 							case 101:
 								if(config.output_data_rate_101_active){
 									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
@@ -347,16 +334,15 @@ module.exports = function(RED) {
 								if(config.sampling_duration_101_active){
 									promises.sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
 								}
-								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
-									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
-								}
+
+								promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
 								if(config.sampling_interval_101_active){
 									promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
 								}
 								if(config.full_scale_range_101_active){
 									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								// promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 102:
 								if(config.output_data_rate_101_active){
@@ -370,10 +356,7 @@ module.exports = function(RED) {
 								if(config.sampling_interval_101_active){
 									promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
 								}
-								// if(config.full_scale_range_101_active){
-								// 	promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
-								// }
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								// promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 						}
 					}
@@ -389,6 +372,7 @@ module.exports = function(RED) {
 					});
 					for(var i in promises){
 						(function(name){
+							console.log(name);
 							promises[name].then((f) => {
 								if(name != 'finish') success[name] = true;
 								else{
@@ -400,17 +384,15 @@ module.exports = function(RED) {
 							});
 						})(i);
 					}
-				}, 1000);
+				}, 500);
 			});
 		}
 		node._sensor_config = _config;
 		if(config.addr){
 			config.addr = config.addr.toLowerCase();
-
 			RED.nodes.getNode(config.connection).sensor_pool.push(config.addr);
 			this.gtw_on('sensor_data-'+config.addr, (data) => {
 				node.status(modes.RUN);
-				data.modem_mac = this.gateway.modem_mac;
 				node.send({
 					topic: 'sensor_data',
 					data: data,
@@ -425,14 +407,19 @@ module.exports = function(RED) {
 				else{
 					console.log('Error: unrecognized sensor mode packet');
 				}
+				console.log('!_!_!_!_!');
+				console.log(config.on_the_fly_enable);
+				console.log(sensor.mode);
 				if(config.auto_config && sensor.mode == "PGM"){
 					_config(sensor);
+				}else if(config.on_the_fly_enable && sensor.mode == "FLY"){
+					console.log('---------------------------------------');
+					_config(sensor, true);
 				}
 			});
 		}else if(config.sensor_type){
 			this.gtw_on('sensor_data-'+config.sensor_type, (data) => {
 				node.status(modes.RUN);
-				data.modem_mac = this.gateway.modem_mac;
 				node.send({
 					topic: 'sensor_data',
 					data: data,
@@ -599,8 +586,4 @@ function int2Bytes(i, l){
 		}
 	}
 	return bytes;
-}
-function toHex(n){return ('00' + n.toString(16)).substr(-2);}
-function toMac(arr){
-	return arr.reduce((h,c,i) => {return ((i==1?toHex(h):h)+':'+toHex(c)).toUpperCase();});
 }
