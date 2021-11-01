@@ -80,6 +80,9 @@
     .form-row.ncd-active-check > div > input[type='checkbox']{
         width: inherit;
     }
+    .form-row .caption{
+        font-size: .95em;
+    }
 </style>
 
 <script type="text/x-red" data-help-name="ncd-gateway-node">
@@ -149,12 +152,13 @@
 			config_comm: {value: "", type: "ncd-gateway-config", required: false},
 			addr: {value: ""},
 			sensor_type: {value: ""},
-			auto_config: {value: ""},
+            auto_config: {value: ""},
+            on_the_fly_enable: {value: ""},
 
             node_id_delay_active: {value: ""},
 			node_id: {value: 0, validate: NCD_validators.number_range(0, 255)},//0 - 255
 
-			delay: {value: 300, validate: NCD_validators.number_range(0, 16777215)},//1 - 16777215
+			delay: {value: 300, validate: NCD_validators.number_range(1, 16777215)},//1 - 16777215
 
 			destination: {value: '0000FFFF', validate: NCD_validators.number_range(0, 0xFFFFFFFF, 16)},//(0 - 0xFFFFFFFF)
 
@@ -203,28 +207,10 @@
 
             mode_80_active: {value: ""},
             mode_80: {value: 0},
-
-            measurement_mode_80_active: {value: ""},
-            measurement_mode_80: {value: 0},
-
-            on_request_timeout_80_active: {value: ""},
-            on_request_timeout_80: {value: 0},
-
             filter_80_active: {value: ""},
             filter_80: {value: 0},
 
-            output_data_rate_p1_81_active: {value: ""},
-            output_data_rate_p1_81: {value: 0},
-            output_data_rate_p2_81_active: {value: ""},
-            output_data_rate_p2_81: {value: 0},
 
-            sampling_duration_p1_81_active: {value: ""},
-            sampling_duration_p1_81: {value: 0},
-            sampling_duration_p2_81_active: {value: ""},
-            sampling_duration_p2_81: {value: 0},
-
-            current_calibration_82:{Value:0},
-            current_calibration_82_active:{Value:""},
             output_data_rate_101_active: {value: ""},
             output_data_rate_101: {value: 0},
             sampling_duration_101_active: {value: ""},
@@ -297,7 +283,6 @@
 					"52": "2 Channel 4-20mA Receiver",
 					"53": "Air Quality CO2 and PM Sensor",
 					"54": "3 Channel RTD",
-          "56": "2 Channel 0-10VDC Receiver",
 					"61": "pH Temperature Sensor",
 					"62": "ORP Temperature Sensor",
 					"63": "pH and ORPTemperature Sensor",
@@ -305,12 +290,11 @@
 					"65": "DO and Temperature Sensor",
 					"66": "DO EC Salinity TDS and Temperature Sensor",
 					"67": "PAR Sensor",
-          "69": "Soil Moisture Temperature and EC Sensor",
-          "80": "One Channel Vibration Plus",
-          "81": "Two Channel Vibration Plus",
-          "82": "Condition Based/Predictive Maintenance Sensor",
-          "101": "Pro Vibration",
-          "102": "Strain Gauge",
+                    "69": "Soil Moisture Temperature and EC Sensor",
+                    "80": "One Channel Vibration Plus",
+                    "81": "Two Channel Vibration Plus",
+                    "101": "Pro Vibration",
+                    "102": "Strain Gauge",
 					"200": "4-20mA Pass Through",
 					"202": "Weather Station",
 					"502": "C_50-27",
@@ -512,8 +496,6 @@
             <option value="52">2 Channel 4-20mA Receiver</option>
             <option value="53">Air Quality CO2 and PM Sensor</option>
             <option value="54">3 Channel RTD</option>
-            <option value="56">2 Channel 0-10VDC Receiver</option>
-            <option value="60">Air Velocity and Precision Pressure & Temperature Sensor</option>
             <option value="61">pH Temperature Sensor</option>
             <option value="62">ORP Temperature Sensor</option>
             <option value="63">pH and ORPTemperature Sensor</option>
@@ -522,11 +504,8 @@
             <option value="66">DO EC Salinity TDS and Temperature Sensor</option>
             <option value="67">PAR Sensor</option>
             <option value="69">Soil Moisture Temperature and EC Sensor</option>
-            <option value="69">3 Channel Soil Moisture Temperature and EC Sensor</option>
-            <option value="72">SDI-12 Wireless</option>
             <option value="80">One Channel Vibration Plus</option>
             <option value="81">Two Channel Vibration Plus</option>
-            <option value="82">Condition Based/Predictive Maintenance Sensor</option>
             <option value="101">Pro Vibration</option>
             <option value="102">Strain Gauge</option>
             <option value="200">4-20mA Pass Through</option>
@@ -548,6 +527,13 @@
 				<label for="node-input-auto_config"><i class="icon-tag"></i> Auto Config</label>
 				<input class="section-control" type="checkbox" id="node-input-auto_config" value="1">
 			</div>
+            <div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-101 data-sensor-102>
+                <hr>
+                <label for="node-input-on_the_fly_enable"><i class="icon-tag"></i> OTF Config*</label>
+                <input type="checkbox" id="node-input-on_the_fly_enable" value="1">
+                <p class="caption">*OTF: On The Fly.<br>This option allows for configuring the sensor without entering configuration mode.
+                <hr>
+            </div>
             <div class="form-row">
                 <label for="node-input-destination"><i class="icon-tag"></i> Destination (0000FFFF for Broadcast Mode)</label>
                 0x<input type="text" id="node-input-destination" value="0000FFFF">
@@ -797,7 +783,7 @@
                 </div>
             </div>
 
-            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-81>
                 <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Mode</strong>
@@ -855,7 +841,7 @@
                 </div>
             </div>
 
-            <div class="ncd-dependent" data-sensor-80 data-sensor-101 data-sensor-102 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-101 data-sensor-102>
                 <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Output Data Rate</strong>
@@ -890,10 +876,6 @@
                         <input type="text" id="node-input-sampling_duration_101">
                     </div>
                 </div>
-            </div>
-
-            <div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-101 data-sensor-102 data-sensor-82>
-                <hr>
                 <div class="form-row ncd-active-check">
                     <strong>Sampling Interval</strong>
                     <div>
@@ -918,79 +900,10 @@
                         <input type="checkbox" id="set_rtc_101" value="true">
                     </div>
                 </div>
+
             </div>
 
-            <div class="ncd-dependent" data-sensor-81>
-                <hr>
-                <div class="form-row ncd-active-check">
-                    <strong>Probe 1: Output Data Rate</strong>
-                    <div>
-                        <label for="node-input-output_data_rate_p1_81_active"><i class="icon-tag"></i>Active:</label>
-                        <input type="checkbox" id="node-input-output_data_rate_p1_81_active" class="ncd-config-toggle" data-target-id="node-input-output_data_rate_p1_81" value="1">
-                    </div>
-                    <div>
-                        <label for="node-input-output_data_rate_p1_81"><i class="icon-tag"></i>Value:</label>
-                        <select id="node-input-output_data_rate_p1_81">
-                            <option value="6">50Hz</option>
-                            <option value="7">100Hz</option>
-                            <option value="8">200Hz</option>
-                            <option value="9">400Hz</option>
-                            <option value="10">800Hz</option>
-                            <option value="11">1600Hz</option>
-                            <option value="12">3200Hz</option>
-                            <option value="13">6400Hz</option>
-                            <option value="14">12800Hz</option>
-
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row ncd-active-check">
-                    <strong>Probe 1: Sampling Duration 1= 50msec, 2= 100msec</strong>
-                    <div>
-                        <label for="node-input-sampling_duration_p1_81_active">Active:</label>
-                        <input type="checkbox" id="node-input-sampling_duration_p1_81_active" class="ncd-config-toggle" data-target-id="node-input-sampling_duration_p1_81" value="1">
-                    </div>
-                    <div>
-                        <label for="node-input-sampling_duration_p1_81"><i class="icon-tag"></i>Value:</label>
-                        <input type="text" id="node-input-sampling_duration_p1_81">
-                    </div>
-                </div>
-                <div class="form-row ncd-active-check">
-                    <strong>Probe 2: Output Data Rate</strong>
-                    <div>
-                        <label for="node-input-output_data_rate_p2_81_active"><i class="icon-tag"></i>Active:</label>
-                        <input type="checkbox" id="node-input-output_data_rate_p2_81_active" class="ncd-config-toggle" data-target-id="node-input-output_data_rate_p2_81" value="1">
-                    </div>
-                    <div>
-                        <label for="node-input-output_data_rate_p2_81"><i class="icon-tag"></i>Value:</label>
-                        <select id="node-input-output_data_rate_p2_81">
-                            <option value="6">50Hz</option>
-                            <option value="7">100Hz</option>
-                            <option value="8">200Hz</option>
-                            <option value="9">400Hz</option>
-                            <option value="10">800Hz</option>
-                            <option value="11">1600Hz</option>
-                            <option value="12">3200Hz</option>
-                            <option value="13">6400Hz</option>
-                            <option value="14">12800Hz</option>
-
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row ncd-active-check">
-                    <strong>Probe 2: Sampling Duration 1= 50msec, 2= 100msec</strong>
-                    <div>
-                        <label for="node-input-sampling_duration_p2_81_active">Active:</label>
-                        <input type="checkbox" id="node-input-sampling_duration_p2_81_active" class="ncd-config-toggle" data-target-id="node-input-sampling_duration_p2_81" value="1">
-                    </div>
-                    <div>
-                        <label for="node-input-sampling_duration_p2_81"><i class="icon-tag"></i>Value:</label>
-                        <input type="text" id="node-input-sampling_duration_p2_81">
-                    </div>
-                </div>
-            </div>
-
-            <div class="ncd-dependent" data-sensor-101 data-sensor-80 data-sensor-81 data-sensor-82>
+            <div class="ncd-dependent" data-sensor-101 data-sensor-80 data-sensor-81>
                 <div class="form-row ncd-active-check">
                     <strong>Full Scale Range</strong>
                     <div>
@@ -1023,23 +936,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="ncd-dependent" data-sensor-82>
-                <div class="form-row ncd-active-check">
-                    <strong>Set Current Calibration Value</strong>
-                    <div>
-                        <label for="node-input-current_calibration_82_active">Active:</label>
-                        <input type="checkbox" id="node-input-current_calibration_82_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_82" value="1">
-                    </div>
-                    <div>
-                        <label for="node-input-current_calibration_82"><i class="icon-tag"></i>Value:</label>
-                        <input type="text" id="node-input-current_calibration_82">
-                    </div>
-                </div>
-
-            </div>
-
-
 			<div class="ncd-dependent" data-sensor-10000 data-sensor-10012>
 				<div class="form-row">
 					<button id="config_sensor">Configure Now</button>
