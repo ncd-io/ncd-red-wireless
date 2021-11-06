@@ -298,7 +298,10 @@ module.exports = function(RED) {
 								if(config.on_request_timeout_80_active){
 									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								if(config.deadband_80_active){
+									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_timeout_80));
+								}
+																promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 81:
 								if(config.output_data_rate_p1_81_active){

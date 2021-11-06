@@ -210,6 +210,9 @@
             on_request_timeout_80_active: {value: ""},
             on_request_timeout_80: {value: 0},
 
+            deadband_80_active: {value: ""},
+            deadband_80: {value: 0},
+
             filter_80_active: {value: ""},
             filter_80: {value: 0},
 
@@ -855,6 +858,19 @@
                 </div>
             </div>
 
+            <div class="form-row ncd-active-check">
+                <strong>Set Dead Band in mg</strong>
+                <div>
+                    <label for="node-input-deadband_80_active">Active:</label>
+                    <input type="checkbox" id="node-input-deadband_80_active" class="ncd-config-toggle" data-target-id="node-input-deadband_80" value="35">
+                </div>
+                <div>
+                    <label for="node-input-deadband_80"><i class="icon-tag"></i>Value:</label>
+                    <input type="text" id="node-input-deadband_80">
+                </div>
+            </div>
+        </div>
+
             <div class="ncd-dependent" data-sensor-80 data-sensor-101 data-sensor-102 data-sensor-82>
                 <hr>
                 <div class="form-row ncd-active-check">
@@ -903,11 +919,16 @@
                     <div>
                         <label for="node-input-sampling_interval_101"><i class="icon-tag"></i>Value:</label>
                         <select id="node-input-sampling_interval_101">
+                          
                             <option value="0">5 Minutes</option>
                             <option value="1">10 Minutes</option>
                             <option value="2">15 Minutes</option>
                             <option value="3">20 Minutes</option>
                             <option value="4">30 Minutes</option>
+                            <option value="5">60 Minutes</option>
+                            <option value="6">120 Minutes</option>
+                            <option value="7">180 Minutes</option>
+                            <option value="8">1 Minutes</option>
                         </select>
                     </div>
                 </div>
