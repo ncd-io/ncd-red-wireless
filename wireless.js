@@ -214,6 +214,11 @@ module.exports = function(RED) {
 					}else{
 						var mac = sensor.mac;
 						var promises = {
+							// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
+							establish_config_network_1: node.config_gateway.config_get_pan_id(mac),
+							establish_config_network_2: node.config_gateway.config_get_pan_id(mac),
+							establish_config_network_3: node.config_gateway.config_get_pan_id(mac),
+
 							destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
 							// id_and_delay: node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay)),
 							// power: node.config_gateway.config_set_power(mac, parseInt(config.power)),
