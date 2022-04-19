@@ -127,7 +127,7 @@ module.exports = function(RED) {
 		};
 
 		node.on('input', function(msg){
-			node.gateway.control_send(msg.payload.address, msg.payload.data).then().catch(console.log);
+			node.gateway.control_send(msg.payload.address, msg.payload.data,msg.payload.data).then().catch(console.log);
 		});
 
 		node.gateway.on('sensor_data', (d) => {
