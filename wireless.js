@@ -349,6 +349,37 @@ module.exports = function(RED) {
 								if(config.current_calibration_82_active){
 									promises.current_calibration_82 = node.config_gateway.config_set_current_calibration_82(mac, parseInt(config.current_calibration_82));
 								}
+								if(config.output_data_rate_101_active){
+									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
+								}
+								if(config.sampling_duration_101_active){
+									promises.sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
+								}
+								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
+									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
+								}
+								if(config.sampling_interval_101_active){
+									promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
+								}
+								if(config.full_scale_range_101_active){
+									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
+								}
+								if(config.mode_80_active){
+									promises.mode = node.config_gateway.config_set_operation_mode_80(mac, parseInt(config.mode_80));
+								}
+								if(config.filter_80_active){
+									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
+								}
+								if(config.measurement_mode_80_active){
+									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
+								}
+								if(config.on_request_timeout_80_active){
+									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
+								}
+								if(config.deadband_80_active){
+									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
+								}
+								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 							case 101:
 								if(config.output_data_rate_101_active){
 									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
