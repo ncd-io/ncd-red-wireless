@@ -82,6 +82,8 @@
     }
     .form-row .caption{
         font-size: .95em;
+		padding-left: 1em;
+		margin-top: .25em;
     }
 </style>
 
@@ -136,6 +138,10 @@
 			}else{
 				return function(v){
 					var int = parseInt(v, base);
+					// Added to remove new settings from interfering with old nodes
+					if(v == undefined){
+						return true;
+					}
 					return int >= l && int <= h;
 				}
 			}
@@ -247,14 +253,31 @@
 
 			current_calibration_82:{Value:0},
 			current_calibration_82_active:{Value:""},
+
+			current_calibration_c1_80:{value:178, validate: NCD_validators.number_range(0, 655)},
+			current_calibration_c1_80_active:{value:""},
+			current_calibration_c2_80:{value:178, validate: NCD_validators.number_range(0, 655)},
+			current_calibration_c2_80_active:{value:""},
+			current_calibration_c3_80:{value:178, validate: NCD_validators.number_range(0, 655)},
+			current_calibration_c3_80_active:{value:""},
+			current_calibration_c2_82:{Value:0, validate: NCD_validators.number_range(0, 655)},
+			current_calibration_c2_82_active:{Value:""},
+
+			current_calibration_c3_82:{Value:0, validate: NCD_validators.number_range(0, 655)},
+			current_calibration_c3_82_active:{Value:""},
+
 			output_data_rate_101_active: {value: ""},
 			output_data_rate_101: {value: 0},
+			output_data_rate_101_m2_active: {value: ""},
+			output_data_rate_101_m2: {value: 0},
 			sampling_duration_101_active: {value: ""},
 			sampling_duration_101: {value: 1, validate: NCD_validators.number_range(1, 255)},
 			sampling_interval_101_active: {value: ""},
 			sampling_interval_101: {value: 1},
 			full_scale_range_101_active: {value: ""},
 			full_scale_range_101: {value: 1},
+			full_scale_range_101_m2_active: {value: ""},
+			full_scale_range_101_m2: {value: 1},
 			x_axis_101: {value: ""},
 			y_axis_101: {value: ""},
 			z_axis_101: {value: ""},
@@ -1071,7 +1094,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="ncd-dependent" data-sensor-80 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-82 data-sensor-84 data-sensor-102>
 				<hr>
 				<div class="form-row ncd-active-check">
 					<strong>Output Data Rate</strong>
@@ -1092,6 +1115,32 @@
 							<option value="13">6400Hz</option>
 							<option value="14">12800Hz</option>
 							<option value="15">25600Hz</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="ncd-dependent" data-sensor-101>
+				<hr>
+				<div class="form-row ncd-active-check">
+					<strong>Output Data Rate</strong>
+					<div>
+						<label for="node-input-output_data_rate_101_m2_active"><i class="icon-tag"></i>Active:</label>
+						<input type="checkbox" id="node-input-output_data_rate_101_m2_active" class="ncd-config-toggle" data-target-id="node-input-output_data_rate_101_m2" value="1">
+					</div>
+					<div>
+						<label for="node-input-output_data_rate_101_m2"><i class="icon-tag"></i>Value:</label>
+						<select id="node-input-output_data_rate_101_m2">
+							<option value="0">4000 SPS</option>
+							<option value="1">2000 SPS</option>
+							<option value="2">1000 SPS</option>
+							<option value="3">500  SPS</option>
+							<option value="4">250  SPS</option>
+							<option value="5">125  SPS</option>
+							<option value="6">62.5 SPS</option>
+							<option value="7">31.25 SPS</option>
+							<option value="8">15.625 SPS</option>
+							<option value="9">7.813 SPS</option>
+							<option value="10">3.906 SPS</option>
 						</select>
 					</div>
 				</div>
@@ -1223,8 +1272,7 @@
 				</div>
 			</div>
 
-
-			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84>
 				<div class="form-row ncd-active-check">
 					<strong>Full Scale Range</strong>
 					<div>
@@ -1238,9 +1286,30 @@
 							<option value="1">+/- 4g</option>
 							<option value="2">+/- 8g</option>
 							<option value="3">+/- 16g</option>
+							<option value="4">+/- 32g</option>
+							<option value="5">+/- 64g</option>
 						</select>
 					</div>
 				</div>
+			</div>
+			<div class="ncd-dependent" data-sensor-101>
+				<div class="form-row ncd-active-check">
+					<strong>Full Scale Range</strong>
+					<div>
+						<label for="node-input-full_scale_range_101_m2_active">Active:</label>
+						<input type="checkbox" id="node-input-full_scale_range_101_m2_active" class="ncd-config-toggle" data-target-id="node-input-full_scale_range_101_m2" value="1">
+					</div>
+					<div>
+						<label for="node-input-full_scale_range_101_m2"><i class="icon-tag"></i>Value:</label>
+						<select id="node-input-full_scale_range_101_m2">
+							<option value="0">+/- 10g</option>
+							<option value="1">+/- 20g</option>
+							<option value="2">+/- 40g</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101>
 				<div class="form-row ncd-active-check">
 					<strong>Set Dead Band in mg</strong>
 					<div>
@@ -1271,11 +1340,11 @@
 
 			<div class="ncd-dependent" data-sensor-82>
 				<div class="form-row ncd-active-check">
-				<strong>Set Current Calibration Value</strong>
-				<div>
-					<label for="node-input-current_calibration_82_active">Active:</label>
-					<input type="checkbox" id="node-input-current_calibration_82_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_82" value="1">
-				</div>
+					<strong>Set Current Calibration Value</strong>
+					<div>
+						<label for="node-input-current_calibration_82_active">Active:</label>
+						<input type="checkbox" id="node-input-current_calibration_82_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_82" value="1">
+					</div>
 					<div>
 						<label for="node-input-current_calibration_82"><i class="icon-tag"></i>Value:</label>
 						<input type="text" id="node-input-current_calibration_82">
@@ -1283,6 +1352,59 @@
 				</div>
 			</div>
 
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-505 data-sensor-506>
+				<div class="form-row ncd-active-check">
+					<strong>Channel 1 Current Calibration Value</strong>
+					<p class="caption">
+						Default 200A Calibration: 178<br>
+						Default 600A Calibration: 548
+					</p>
+					<div>
+						<label for="node-input-current_calibration_c1_80_active">Active:</label>
+						<input type="checkbox" id="node-input-current_calibration_c1_80_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_c1_80" value="1">
+					</div>
+					<div>
+						<label for="node-input-current_calibration_c1_80"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-current_calibration_c1_80" placeholder="178" value="178">
+					</div>
+				</div>
+			</div>
+
+			<div class="ncd-dependent" data-sensor-81 data-sensor-506>
+				<div class="form-row ncd-active-check">
+				<strong>Channel 2 Current Calibration Value</strong>
+				<p class="caption">
+					Default 200A Calibration: 178<br>
+					Default 600A Calibration: 548
+				</p>
+				<div>
+					<label for="node-input-current_calibration_c2_80_active">Active:</label>
+					<input type="checkbox" id="node-input-current_calibration_c2_80_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_c2_80" value="1">
+				</div>
+					<div>
+						<label for="node-input-current_calibration_c2_80"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-current_calibration_c2_80" placeholder="178" value="178">
+					</div>
+				</div>
+			</div>
+
+			<div class="ncd-dependent" data-sensor-506>
+				<div class="form-row ncd-active-check">
+				<strong>Channel 3 Current Calibration Value</strong>
+				<p class="caption">
+					Default 200A Calibration: 178<br>
+					Default 600A Calibration: 548
+				</p>
+				<div>
+					<label for="node-input-current_calibration_c3_80_active">Active:</label>
+					<input type="checkbox" id="node-input-current_calibration_c3_80_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_c3_80" value="1">
+				</div>
+					<div>
+						<label for="node-input-current_calibration_c3_80"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-current_calibration_c3_80" placeholder="178" value="178">
+					</div>
+				</div>
+			</div>
 
 			<div class="ncd-dependent" data-sensor-10000 data-sensor-10012>
 				<div class="form-row">
