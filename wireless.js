@@ -263,6 +263,7 @@ module.exports = function(RED) {
 								if(name != 'finish') msg[name] = true;
 								else{
 									// #OTF
+									this.fly_101_in_progress = false;
 									node.send({topic: 'RTC Broadcast', payload: msg});
 									top_fulfill(msg);
 								}
@@ -684,6 +685,14 @@ module.exports = function(RED) {
 							_send_otn_request(sensor);
 						}, 100);
 					}
+				}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
+					// send broadcast rtc to 101 and 102 regardless of settings
+					if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
+						this.fly_101_in_progress = true;
+						var broadcast_tout = setTimeout(() => {
+							_broadcast_rtc(sensor);
+						}, 1000);
+					}
 				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
 					_config(sensor, true);
 				}
@@ -729,6 +738,14 @@ module.exports = function(RED) {
 							var tout = setTimeout(() => {
 								_send_otn_request(sensor);
 							}, 100);
+						}
+					}else if(sensor.mode == "FLY" && config.sensor_type == 101 || sensor.mode == "FLY" &&  config.sensor_type == 102){
+						// send broadcast rtc to 101 and 102 regardless of settings
+						if(this.hasOwnProperty('fly_101_in_progress') && this.fly_101_in_progress == false || !this.hasOwnProperty('fly_101_in_progress')){
+							this.fly_101_in_progress = true;
+							var broadcast_tout = setTimeout(() => {
+								_broadcast_rtc(sensor);
+							}, 1000);
 						}
 					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
 						_config(sensor, true);
