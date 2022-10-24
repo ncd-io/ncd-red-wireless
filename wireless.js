@@ -577,7 +577,7 @@ module.exports = function(RED) {
 								if(config.full_scale_range_101_m2_active){
 									promises.full_scale_range_101_m2 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101_m2));
 								}
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								// promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 102:
 								if(config.output_data_rate_101_active){
@@ -594,7 +594,7 @@ module.exports = function(RED) {
 								// if(config.full_scale_range_101_active){
 								// 	promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								// }
-								promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								// promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								break;
 							case 505:
 								if(config.current_calibration_c1_80_active){
