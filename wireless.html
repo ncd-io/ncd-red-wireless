@@ -409,6 +409,13 @@
 				$("#node-config-input-addr").autocomplete( "destroy" );
 			} catch(err) {}
 			$('.ncd-dependent[sensor_type]').hide();
+			// loops through all settings that need validation and sets default values
+			// Solves library upgrades that add new properties
+			for(let prop in this._def.defaults){
+				if(typeof this._def.defaults[prop].validate == 'function' && this[prop] == undefined){
+					$('#node-input-'+prop).val(this._def.defaults[prop].value);
+				}
+			}
 			$('#node-input-connection').change(function(){
 				$.getJSON('ncd/wireless/needs_input/'+$(this).val(),function(data) {
 					if(data.is_raw){
