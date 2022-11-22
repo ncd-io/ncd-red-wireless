@@ -297,15 +297,29 @@ module.exports = function(RED) {
 						};
 					}else{
 						var mac = sensor.mac;
-						var promises = {
-							// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
-							establish_config_network_1: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
-							establish_config_network_2: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
-							establish_config_network_3: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
-
-							destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
-							network_id: node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
-						};
+						var promises = {};
+						var reboot = false;
+						if(config.form_network){
+							promises.establish_config_network_1 = node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF');
+							promises.establish_config_network_2 = node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF');
+							promises.establish_config_network_3 = node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF');
+						}
+						if(config.destination_active){
+							promises.destination = node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16));
+						}
+						if(config.pan_id_active){
+							reboot = true;
+							promises.network_id = node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16));
+						}
+						// var promises = {
+						// 	// NOTE: establish_config_network_x commands added to force XBee network to form before sending commands.
+						// 	establish_config_network_1: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+						// 	establish_config_network_2: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+						// 	establish_config_network_3: node.config_gateway.config_get_pan_id('00:00:00:00:00:00:FF:FF'),
+						//
+						// 	destination: node.config_gateway.config_set_destination(mac, parseInt(config.destination, 16)),
+						// 	network_id: node.config_gateway.config_set_pan_id(mac, parseInt(config.pan_id, 16))
+						// };
 						if(config.node_id_delay_active){
 							promises.id_and_delay = node.config_gateway.config_set_id_delay(mac, parseInt(config.node_id), parseInt(config.delay));
 						}
@@ -607,7 +621,11 @@ module.exports = function(RED) {
 								}
 						}
 					}
-					if(otf){
+					// If we changed the network ID reboot the sensor to take effect.
+					// TODO if we add the encryption key command to node-red we need to reboot for it as well.
+					if(reboot){
+						promises.reboot_sensor = node.config_gateway.config_reboot_sensor(mac);
+					} else if(otf){
 						promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode(mac);
 					}
 					promises.finish = new Promise((fulfill, reject) => {
@@ -653,6 +671,7 @@ module.exports = function(RED) {
 			});
 			this.gtw_on('set_destination_address'+config.addr, (d) => {
 				if(config.auto_config){
+					node.warn('Setting destination address');
 					return new Promise((top_fulfill, top_reject) => {
 						var msg = {};
 						setTimeout(() => {
@@ -769,6 +788,7 @@ module.exports = function(RED) {
 			});
 			this.gtw_on('set_destination_address'+config.sensor_type, (d) => {
 				if(config.auto_config){
+					node.warn('Setting destination address');
 					return new Promise((top_fulfill, top_reject) => {
 						var msg = {};
 						setTimeout(() => {

@@ -128,8 +128,21 @@
 
 <script type="text/javascript">
 	NCD_validators = {
-		number_range: function(l, h, base){
+		number_range: function(l, h, base, property_name = false){
 			if(!base) base = 10;
+			if(property_name === 'on_request_timeout_80'){
+				return function(v){
+					var int = parseInt(v, base);
+					if(this.on_request_timeout_80 == 0){
+						console.log('ERROR: Invalid property detect. Setting on_request_timeout_80 to default value');
+						$("#node-input-on_request_timeout_80").val(1);
+						return true;
+					} else if(v == undefined){
+						return true;
+					}
+					return int >= l && int <= h;
+				}
+			}
 			if(base == 'decimal'){
 				return function(v){
 					var n = parseFloat(v);
@@ -166,6 +179,9 @@
 
 			delay: {value: 300, validate: NCD_validators.number_range(0, 16777215)},//1 - 16777215
 
+			form_network: {value: ""},
+
+			destination_active: {value: ""},
 			destination: {value: '0000FFFF', validate: NCD_validators.number_range(0, 0xFFFFFFFF, 16)},//(0 - 0xFFFFFFFF)
 
 			power_active: {value: ""},
@@ -218,7 +234,7 @@
 			measurement_mode_80: {value: 0},
 
 			on_request_timeout_80_active: {value: ""},
-			on_request_timeout_80: {value: 0},
+			on_request_timeout_80: {value: 1, validate: NCD_validators.number_range(1, 10, 10, 'on_request_timeout_80')},
 
 
 			deadband_80_active: {value: ""},
@@ -623,13 +639,47 @@
 				</p>
 				<hr>
 			</div>
-			<div class="form-row">
-				<label for="node-input-destination"><i class="icon-tag"></i> Destination (0000FFFF for Broadcast Mode)</label>
-				0x<input type="text" id="node-input-destination" value="0000FFFF">
+			<div class="form-row ncd-active-check">
+				<strong>Wait for Network Formation</strong>
+				<div>
+					<label for="node-input-form_network"><i class="icon-tag"></i>Enable</label>
+					<input type="checkbox" id="node-input-form_network" value="1">
+				</div>
+				<p class="caption">
+					Enabling this adds commands to ensure the mesh network is <br>fully formed before sending configuration<br>
+					This will increase the reliability of confiugration commands but slow down configuration
+				</p>
 			</div>
-			<div class="form-row">
-				<label for="node-input-pan_id"><i class="icon-tag"></i> Network ID (0 - 0x7FFF)</label>
-				0x<input type="text" id="node-input-pan_id" value="7FFF">
+			<div class="form-row ncd-active-check">
+				<strong>Destination Address</strong>
+				<div>
+					<label for="node-input-destination_active">Active:</label>
+					<input type="checkbox" id="node-input-destination_active" class="ncd-config-toggle" data-target-class="node-input-destination" value="1">
+				</div>
+				<div>
+					<label for="node-input-destination"><i class="icon-tag"></i>Node ID:</label>
+					<input type="text" id="node-input-destination" value="0000FFFF">
+				</div>
+				<p class="caption">
+					Default value: 0000FFFF for Broadcast Mode<br>
+					Example of targeted address: 41D5EC37
+				</p>
+			</div>
+			<div class="form-row ncd-active-check">
+				<strong>Network ID</strong>
+				<div>
+					<label for="node-input-pan_id_active">Active:</label>
+					<input type="checkbox" id="node-input-pan_id_active" class="ncd-config-toggle" data-target-class="node-input-pan_id" value="1">
+				</div>
+				<div>
+					<label for="node-input-pan_id"><i class="icon-tag"></i>Node ID:</label>
+					<input type="text" id="node-input-pan_id" value="7FFF">
+				</div>
+				<p class="caption">
+					Network ID Valid Range: 0-0x7FFF. Automatic sensor reboot<br><br>
+					<strong>WARNING</strong>: Setting this to active while your sensor supports OTF will put sensors into a reboot cycle.<br>
+					Once all of the sensors have had their Network ID updated you must disable this configuration.
+				</p>
 			</div>
 			<div class="form-row ncd-active-check">
 				<strong>Node ID and Delay</strong>
@@ -973,7 +1023,7 @@
 					</div>
 					<div>
 						<label for="node-input-on_request_timeout_80"><i class="icon-tag"></i>Value:</label>
-						<input type="text" id="node-input-on_request_timeout_80">
+						<input type="text" id="node-input-on_request_timeout_80" value="1">
 					</div>
 				</div>
 			</div>
