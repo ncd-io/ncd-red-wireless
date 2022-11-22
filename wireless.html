@@ -412,8 +412,10 @@
 			// loops through all settings that need validation and sets default values
 			// Solves library upgrades that add new properties
 			for(let prop in this._def.defaults){
-				if(typeof this._def.defaults[prop].validate == 'function' && this[prop] == undefined){
-					$('#node-input-'+prop).val(this._def.defaults[prop].value);
+				if(typeof this._def.defaults[prop].validate == 'function'){
+					if(this[prop] == undefined || this[prop] == ""){
+						$('#node-input-'+prop).val(this._def.defaults[prop].value);
+					}
 				}
 			}
 			$('#node-input-connection').change(function(){
