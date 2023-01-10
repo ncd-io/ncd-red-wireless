@@ -132,7 +132,7 @@ module.exports = function(RED) {
 
 		node.gateway.on('sensor_data', (d) => {
 			node.set_status();
-			node.send({topic: 'sensor_data', payload: d});
+			node.send({topic: 'sensor_data', payload: d, time: Date.now()});
 		});
 		node.gateway.on('sensor_mode', (d) => {
 			node.set_status();
@@ -141,13 +141,13 @@ module.exports = function(RED) {
 		node.gateway.on('receive_packet-unknown_device',(d)=>{
 			node.set_status();
 			msg1 = {topic:'somethingTopic',payload:"something"};
-			node.send([null,{topic: 'unknown_data', payload:d}]);
+			node.send([null,{topic: 'unknown_data', payload:d, time: Date.now()}]);
 		});
 
 		node.set_status();
 		node._gateway_node.on('mode_change', (mode) => {
 			node.set_status();
-			node.send({topic: 'modem_mac', payload: this.gateway.modem_mac});
+			node.send({topic: 'modem_mac', payload: this.gateway.modem_mac, time: Date.now()});
 		});
 	}
 	RED.nodes.registerType("ncd-gateway-node", NcdGatewayNode);
@@ -195,7 +195,7 @@ module.exports = function(RED) {
 				setTimeout(() => {
 					var tout = setTimeout(() => {
 						node.status(modes.PGM_ERR);
-						node.send({topic: 'OTN Request Results', payload: msg});
+						node.send({topic: 'OTN Request Results', payload: msg, time: Date.now()});
 					}, 10000);
 
 					var promises = {};
@@ -218,7 +218,7 @@ module.exports = function(RED) {
 								if(name != 'finish') msg[name] = true;
 								else{
 									// #OTF
-									node.send({topic: 'OTN Request Results', payload: msg});
+									node.send({topic: 'OTN Request Results', payload: msg, time: Date.now()});
 									top_fulfill(msg);
 								}
 							}).catch((err) => {
@@ -235,7 +235,7 @@ module.exports = function(RED) {
 				setTimeout(() => {
 					var tout = setTimeout(() => {
 						node.status(modes.PGM_ERR);
-						node.send({topic: 'RTC Broadcast', payload: msg});
+						node.send({topic: 'RTC Broadcast', payload: msg, time: Date.now()});
 					}, 10000);
 
 					var promises = {};
@@ -259,7 +259,7 @@ module.exports = function(RED) {
 								else{
 									// #OTF
 									this.gateway.fly_101_in_progress = false;
-									node.send({topic: 'RTC Broadcast', payload: msg});
+									node.send({topic: 'RTC Broadcast', payload: msg, time: Date.now()});
 									top_fulfill(msg);
 								}
 							}).catch((err) => {
@@ -276,7 +276,7 @@ module.exports = function(RED) {
 				setTimeout(() => {
 					var tout = setTimeout(() => {
 						node.status(modes.PGM_ERR);
-						node.send({topic: 'Config Results', payload: success});
+						node.send({topic: 'Config Results', payload: success, time: Date.now()});
 					}, 60000);
 					node.status(modes.PGM_NOW);
 					if(parseInt(config.sensor_type) >= 10000){
@@ -644,7 +644,7 @@ module.exports = function(RED) {
 								if(name != 'finish') success[name] = true;
 								else{
 									// #OTF
-									node.send({topic: 'Config Results', payload: success});
+									node.send({topic: 'Config Results', payload: success, time: Date.now()});
 									top_fulfill(success);
 								}
 							}).catch((err) => {
@@ -666,7 +666,8 @@ module.exports = function(RED) {
 				node.send({
 					topic: 'sensor_data',
 					data: data,
-					payload: data.sensor_data
+					payload: data.sensor_data,
+					time: Date.now()
 				});
 			});
 			this.gtw_on('set_destination_address'+config.addr, (d) => {
@@ -677,7 +678,7 @@ module.exports = function(RED) {
 						setTimeout(() => {
 							var tout = setTimeout(() => {
 								node.status(modes.PGM_ERR);
-								node.send({topic: 'FLY Set Destination Address', payload: msg});
+								node.send({topic: 'FLY Set Destination Address', payload: msg, time: Date.now()});
 							}, 10000);
 
 							var promises = {};
@@ -698,7 +699,7 @@ module.exports = function(RED) {
 									promises[name].then((f) => {
 										if(name != 'finish') msg[name] = true;
 										else{
-											node.send({topic: 'FLY Set Destination Address', payload: msg});
+											node.send({topic: 'FLY Set Destination Address', payload: msg, time: Date.now()});
 											top_fulfill(msg);
 										}
 									}).catch((err) => {
@@ -783,7 +784,8 @@ module.exports = function(RED) {
 				node.send({
 					topic: 'sensor_data',
 					data: data,
-					payload: data.sensor_data
+					payload: data.sensor_data,
+					time: Date.now()
 				});
 			});
 			this.gtw_on('set_destination_address'+config.sensor_type, (d) => {
@@ -794,7 +796,7 @@ module.exports = function(RED) {
 						setTimeout(() => {
 							var tout = setTimeout(() => {
 								node.status(modes.PGM_ERR);
-								node.send({topic: 'FLY Set Destination Address', payload: msg});
+								node.send({topic: 'FLY Set Destination Address', payload: msg, time: Date.now()});
 							}, 10000);
 
 							var promises = {};
@@ -815,7 +817,7 @@ module.exports = function(RED) {
 									promises[name].then((f) => {
 										if(name != 'finish') msg[name] = true;
 										else{
-											node.send({topic: 'FLY Set Destination Address', payload: msg});
+											node.send({topic: 'FLY Set Destination Address', payload: msg, time: Date.now()});
 											top_fulfill(msg);
 										}
 									}).catch((err) => {
