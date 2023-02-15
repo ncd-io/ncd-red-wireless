@@ -308,6 +308,10 @@
 			high_pass_filter_81_p2_active: {value:""},
 			high_pass_filter_81_p2: {value:0},
 
+			roll_angle_threshold_47:{value:0, validate: NCD_validators.number_range(0, 255)},
+			roll_angle_threshold_47_active:{value:""},
+			pitch_angle_threshold_47:{value:0, validate: NCD_validators.number_range(0, 255)},
+			pitch_angle_threshold_47_active:{value:""},
 		},
 		inputs: 0,
 		outputs: 1,
@@ -369,6 +373,7 @@
 					"53": "Air Quality CO2 and PM Sensor",
 					"54": "3 Channel RTD",
 					"56": "2 Channel 0-10VDC Receiver",
+					"60": "Air Velocity, Pressure, & Temperature Sensor",
 					"61": "pH Temperature Sensor",
 					"62": "ORP Temperature Sensor",
 					"63": "pH and ORPTemperature Sensor",
@@ -377,13 +382,17 @@
 					"66": "DO EC Salinity TDS and Temperature Sensor",
 					"67": "PAR Sensor",
 					"69": "Soil Moisture Temperature and EC Sensor",
+//					"70": "2 Channel Soil Moisture Temperature and EC Sensor",
+					"71": "3 Channel Soil Moisture Temperature and EC Sensor",
 					"72": "SDI Soil Moisture Temperature Moisture Probe",
 					"75": "Siemens Air Velocity Probe",
 					"76": "Wireless CO Gas Sensor",
+					"77": "3 Channel SDI Soil Moisture Temperature Moisture Probe",
+					"79": "Oil Analysis Sensor",
 					"80": "One Channel Vibration Plus",
 					"81": "Two Channel Vibration Plus",
 					"82": "Condition Based/Predictive Maintenance Sensor",
-					"84": "Type 84 - Vibration on a stick",
+					"84": "Type 84 - Standalone Smart Vibration Sensor",
 					"101": "Pro Vibration",
 					"102": "Strain Gauge",
 					"200": "4-20mA Pass Through",
@@ -394,6 +403,7 @@
 					"507": "Custom_SAP_Current_7C",
 					"510": "GreenLight",
 					"515": "Custom_SAP_Current_48C",
+					"519": "Type 519: Custom Vibration 1",
 					"10000": "4-Channel Relay",
 					"10006": "4-Channel 4-20 mA Input",
 					"10007": "4-Channel Current Monitor",
@@ -590,7 +600,7 @@
 			<option value="44">Wireless CO2 Gas Sensor</option>
 			<option value="45">4-20mA 16-Bit Input Transmitter</option>
 			<option value="46">Motion Detection Sensor</option>
-			<option value="47">2 Channel RTD</option>
+			<option value="47">Type 47: Tilt Sensor</option>
 			<option value="48">4-20mA 16-Bit Input Transmitter</option>
 			<option value="49">6 Channel Thermocouple Sensor</option>
 			<option value="50">Predictive Maintenance Sensor</option>
@@ -608,13 +618,19 @@
 			<option value="66">DO EC Salinity TDS and Temperature Sensor</option>
 			<option value="67">PAR Sensor</option>
 			<option value="69">Soil Moisture Temperature and EC Sensor</option>
-			<option value="69">3 Channel Soil Moisture Temperature and EC Sensor</option>
+<!--
+			<option value="70">2 Channel Soil Moisture Temperature and EC Sensor</option>
+-->
+			<option value="71">3 Channel Soil Moisture Temperature and EC Sensor</option>
 			<option value="72">SDI-12 Wireless</option>
 			<option value="75">Siemens Air Velocity Probe</option>
+			<option value="76">Wireless CO Gas Sensor</option>
+			<option value="77">3 Channel SDI Soil Moisture Temperature Moisture Probe</option>
+			<option value="79">Oil Analysis Sensor</option>
 			<option value="80">One Channel Vibration Plus</option>
 			<option value="81">Two Channel Vibration Plus</option>
 			<option value="82">Condition Based/Predictive Maintenance Sensor</option>
-			<option value="84">Type 84 - Vibration on a stick</option>
+			<option value="84">Type 84 - Standalone Smart Vibration Sensor</option>
 			<option value="101">Pro Vibration</option>
 			<option value="102">Strain Gauge</option>
 			<option value="200">4-20mA Pass Through</option>
@@ -625,6 +641,7 @@
 			<option value="507">Custom_SAP_Current_7C</option>
 			<option value="510">GreenLight</option>
 			<option value="515">Custom_SAP_Current_48C</option>
+			<option value="519">Type 519: Custom Vibration 1</option>
 			<option value="10000">4-Channel Relay</option>
 			<option value="10006">4-Channel 4-20 mA Input</option>
 			<option value="10007">4-Channel Current Monitor</option>
@@ -638,7 +655,7 @@
 				<label for="node-input-auto_config"><i class="icon-tag"></i> Auto Config</label>
 				<input class="section-control" type="checkbox" id="node-input-auto_config" value="1">
 			</div>
-			<div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
+			<div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102 data-sensor-519>
 				<hr>
 				<label for="node-input-on_the_fly_enable"><i class="icon-tag"></i> OTF Config*</label>
 				<input type="checkbox" id="node-input-on_the_fly_enable" value="1">
@@ -931,7 +948,7 @@
 				</div>
 			</div>
 
-			<div class="ncd-dependent" data-sensor-84>
+			<div class="ncd-dependent" data-sensor-84 data-sensor-519>
 				<hr>
 				<div class="form-row ncd-active-check">
 					<strong>LED Alert Mode</strong>
@@ -993,7 +1010,7 @@
 				</div>
 			</div>
 
-			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-519>
 				<hr>
 				<div class="form-row ncd-active-check">
 					<strong>Mode</strong>
@@ -1037,7 +1054,7 @@
 				</div>
 			</div>
 
-			<div class="ncd-dependent" data-sensor-80 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102 data-sensor-519>
 				<hr>
 				<div class="form-row ncd-active-check">
 					<strong>Set Sampling Duration 1= 50msec, 2= 100msec</strong>
@@ -1052,7 +1069,7 @@
 				</div>
 			</div>
 
-			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102 data-sensor-519>
 				<hr>
 				<div class="form-row ncd-active-check">
 					<strong>Sampling Interval</strong>
@@ -1153,7 +1170,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="ncd-dependent" data-sensor-80 data-sensor-82 data-sensor-84 data-sensor-102>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-82 data-sensor-84 data-sensor-102 data-sensor-519>
 				<hr>
 				<div class="form-row ncd-active-check">
 					<strong>Output Data Rate</strong>
@@ -1204,7 +1221,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-519>
 				<div class="form-row ncd-active-check">
 					<strong>Set Filtering</strong>
 					<div>
@@ -1331,7 +1348,7 @@
 				</div>
 			</div>
 
-			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-519>
 				<div class="form-row ncd-active-check">
 					<strong>Full Scale Range</strong>
 					<div>
@@ -1368,7 +1385,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101>
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-519>
 				<div class="form-row ncd-active-check">
 					<strong>Set Dead Band in mg</strong>
 					<div>
@@ -1449,18 +1466,51 @@
 
 			<div class="ncd-dependent" data-sensor-506>
 				<div class="form-row ncd-active-check">
-				<strong>Channel 3 Current Calibration Value</strong>
-				<p class="caption">
-					Default 200A Calibration: 178<br>
-					Default 600A Calibration: 548
-				</p>
-				<div>
-					<label for="node-input-current_calibration_c3_80_active">Active:</label>
-					<input type="checkbox" id="node-input-current_calibration_c3_80_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_c3_80" value="1">
-				</div>
+					<strong>Channel 3 Current Calibration Value</strong>
+					<p class="caption">
+						Default 200A Calibration: 178<br>
+						Default 600A Calibration: 548
+					</p>
+					<div>
+						<label for="node-input-current_calibration_c3_80_active">Active:</label>
+						<input type="checkbox" id="node-input-current_calibration_c3_80_active" class="ncd-config-toggle" data-target-id="node-input-current_calibration_c3_80" value="1">
+					</div>
 					<div>
 						<label for="node-input-current_calibration_c3_80"><i class="icon-tag"></i>Value:</label>
 						<input type="text" id="node-input-current_calibration_c3_80" placeholder="178" value="178">
+					</div>
+				</div>
+			</div>
+
+			<div class="ncd-dependent" data-sensor-47>
+				<div class="form-row ncd-active-check">
+					<strong>Roll Angle Threshold</strong>
+					<p class="caption">
+						This settings forces the sensor to transmit a packet when it detects a change in Roll angle at the chosen value or a multiple of the chosen value.<br>
+						A value of 20 will force the sensor to transmit a packet at a roll angle of 20 degrees, -20 degrees, 40 degrees, -40 degrees, etc.
+					</p>
+					<div>
+						<label for="node-input-roll_angle_threshold_47_active">Active:</label>
+						<input type="checkbox" id="node-input-roll_angle_threshold_47_active" class="ncd-config-toggle" data-target-id="node-input-roll_angle_threshold_47" value="1">
+					</div>
+					<div>
+						<label for="node-input-roll_angle_threshold_47"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-roll_angle_threshold_47" placeholder="10" value="10">
+					</div>
+				</div>
+				<div class="form-row ncd-active-check">
+					<strong>Pitch Angle Threshold</strong>
+					<p class="caption">
+						This settings forces the sensor to transmit a packet when it detects a change in Pitch angle at the chosen value or a multiple of the chosen value.<br>
+						A value of 20 will force the sensor to transmit a packet at a pitch angle of 20 degrees, -20 degrees, 40 degrees, -40 degrees, etc.
+					</p>
+					<div>
+						<label for="node-input-pitch_angle_threshold_47_active">Active:</label>
+						<input type="checkbox" id="node-input-pitch_angle_threshold_47_active" class="ncd-config-toggle" data-target-id="node-input-pitch_angle_threshold_47" value="1">
+					</div>
+					<div>
+						<label for="node-input-pitch_angle_threshold_47"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-pitch_angle_threshold_47" placeholder="10" value="10">
 					</div>
 				</div>
 			</div>
