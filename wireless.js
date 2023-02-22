@@ -199,9 +199,15 @@ module.exports = function(RED) {
 					}, 10000);
 
 					var promises = {};
-
-					promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(sensor.mac);
-
+					// This command is used for OTF on types 53, 80,81,82,83,84, 101, 102 , 518,519
+					let original_otf_devices = [53, 80, 81, 82, 83, 84, 101, 102 , 518, 519, 520];
+					if(original_otf_devices.includes(sensor.type)){
+						// This command is used for OTF on types 53, 80,81,82,83,84, 101, 102 , 518,519
+						promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode(sensor.mac);
+					}else{
+						// This command is used for OTF on types not 53, 80,81,82,83,84, 101, 102 , 518,519
+						promises.config_enter_otn_mode = node.config_gateway.config_enter_otn_mode_common(sensor.mac);
+					}
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
 							return new Promise((f, r) => {
@@ -371,6 +377,14 @@ module.exports = function(RED) {
 									promises.sensor_forced_calibration = node.config_gateway.config_set_sensor_forced_calibration(mac, parseInt(config.force_calibration_co2));
 								}
 								break;
+							case 47:
+								if(config.roll_angle_threshold_47_active){
+									promises.roll_angle_threshold_47 = node.config_gateway.config_set_roll_threshold_47(mac, parseInt(config.roll_angle_threshold_47));
+								}
+								if(config.pitch_angle_threshold_47_active){
+									promises.pitch_angle_threshold_47 = node.config_gateway.config_set_pitch_threshold_47(mac, parseInt(config.pitch_angle_threshold_47));
+								}
+								break;
 							case 80:
 								if(config.current_calibration_c1_80_active){
 									promises.current_calibration_c1_80 = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c1_80), 1);
@@ -517,6 +531,7 @@ module.exports = function(RED) {
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								}
+								break;
 							case 84:
 								if(config.output_data_rate_101_active){
 									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
@@ -609,6 +624,7 @@ module.exports = function(RED) {
 								if(config.current_calibration_c1_80_active){
 									promises.current_calibration_c1_80_active = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c1_80), 1);
 								}
+								break;
 							case 506:
 								if(config.current_calibration_c1_80_active){
 									promises.current_calibration_c1_80_active = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c1_80), 1);
@@ -619,14 +635,74 @@ module.exports = function(RED) {
 								if(config.current_calibration_c3_80_active){
 									promises.current_calibration_c3_80 = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c3_80), 5);
 								}
+								break;
+							case 519:
+								if(config.output_data_rate_101_active){
+									promises.output_data_rate_101 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101));
+								}
+								if(config.sampling_duration_101_active){
+									promises.sampling_duration_101 = node.config_gateway.config_set_sampling_duration_101(mac, parseInt(config.sampling_duration_101));
+								}
+								if(config.x_axis_101 || config.y_axis_101 || config.z_axis_101){
+									promises.axis_enabled_101 = node.config_gateway.config_set_axis_enabled_101(mac, config.x_axis_101, config.y_axis_101, config.z_axis_101);
+								}
+								if(config.sampling_interval_101_active){
+									promises.sampling_interval_101 = node.config_gateway.config_set_sampling_interval_101(mac, parseInt(config.sampling_interval_101));
+								}
+								if(config.full_scale_range_101_active){
+									promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
+								}
+								if(config.mode_80_active){
+									promises.mode = node.config_gateway.config_set_operation_mode_80(mac, parseInt(config.mode_80));
+								}
+								if(config.filter_80_active){
+									promises.filter = node.config_gateway.config_set_filters_80(mac, parseInt(config.filter_80));
+								}
+								if(config.low_pass_filter_80_active){
+									promises.low_pass_filter = node.config_gateway.config_set_low_pass_filter_80(mac, parseInt(config.low_pass_filter_80));
+								}
+								if(config.high_pass_filter_80_active){
+									promises.high_pass_filter = node.config_gateway.config_set_high_pass_filter_80(mac, parseInt(config.high_pass_filter_80));
+								}
+								if(config.measurement_mode_80_active){
+									promises.measurement_mode = node.config_gateway.config_set_measurement_mode_80(mac, parseInt(config.measurement_mode_80));
+								}
+								if(config.on_request_timeout_80_active){
+									promises.on_request_timeout = node.config_gateway.config_set_filters_80(mac, parseInt(config.on_request_timeout_80));
+								}
+								if(config.deadband_80_active){
+									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
+								}
+								if(config.led_alert_mode_84_active){
+									promises.led_alert_mode_84 = node.config_gateway.config_set_led_alert_mode_84(mac, parseInt(config.led_alert_mode_84));
+								}
+								if(config.led_accelerometer_threshold_84_active){
+									promises.led_accelerometer_threshold_84 = node.config_gateway.config_set_led_accelerometer_threshold_84(mac, parseInt(config.led_accelerometer_threshold_84));
+								}
+								if(config.led_velocity_threshold_84_active){
+									promises.led_velocity_threshold_84 = node.config_gateway.config_set_led_velocity_threshold_84(mac, parseInt(config.led_velocity_threshold_84));
+								}
+								if(config.acceleration_interrupt_threshold_84_active){
+									promises.acceleration_interrupt_threshold_84 = node.config_gateway.config_set_acceleration_interrupt_threshold_84(mac, parseInt(config.acceleration_interrupt_threshold_84));
+								}
+								if(config.set_rtc_101){
+									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								}
+								break;
 						}
 					}
+					// These sensors listed in original_otf_devices use a different OTF code.
+					let original_otf_devices = [53, 80, 81, 82, 83, 84, 101, 102 , 518, 519. 520];
 					// If we changed the network ID reboot the sensor to take effect.
 					// TODO if we add the encryption key command to node-red we need to reboot for it as well.
 					if(reboot){
 						promises.reboot_sensor = node.config_gateway.config_reboot_sensor(mac);
 					} else if(otf){
-						promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode(mac);
+						if(original_otf_devices.includes(sensor.type)){
+							promises.exit_otn_mode = node.config_gateway.config_exit_otn_mode(mac);
+						}else{
+							promises.config_exit_otn_mode_common = node.config_gateway.config_exit_otn_mode_common(mac);
+						}
 					}
 					promises.finish = new Promise((fulfill, reject) => {
 						node.config_gateway.queue.add(() => {
