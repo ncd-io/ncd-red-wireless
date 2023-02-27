@@ -692,7 +692,7 @@ module.exports = function(RED) {
 						}
 					}
 					// These sensors listed in original_otf_devices use a different OTF code.
-					let original_otf_devices = [53, 80, 81, 82, 83, 84, 101, 102 , 518, 519. 520];
+					let original_otf_devices = [53, 80, 81, 82, 83, 84, 101, 102 , 518, 519, 520];
 					// If we changed the network ID reboot the sensor to take effect.
 					// TODO if we add the encryption key command to node-red we need to reboot for it as well.
 					if(reboot){
