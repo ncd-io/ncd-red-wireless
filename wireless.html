@@ -236,6 +236,8 @@
 			on_request_timeout_80_active: {value: ""},
 			on_request_timeout_80: {value: 1, validate: NCD_validators.number_range(1, 10, 10, 'on_request_timeout_80')},
 
+			sensor_boot_time_420ma_active: {value: ""},
+			sensor_boot_time_420ma: {value: 0, validate: NCD_validators.number_range(0, 255)},
 
 			deadband_80_active: {value: ""},
 			deadband_80: {value: 0, validate: NCD_validators.number_range(0, 255)},
@@ -312,6 +314,9 @@
 			roll_angle_threshold_47_active:{value:""},
 			pitch_angle_threshold_47:{value:0, validate: NCD_validators.number_range(0, 255)},
 			pitch_angle_threshold_47_active:{value:""},
+
+			payload_length_80_active:{value:""},
+			payload_length_80:{value:3, validate: NCD_validators.number_range(0, 3)},
 		},
 		inputs: 0,
 		outputs: 1,
@@ -752,7 +757,6 @@
 					<input type="text" id="node-input-retries">
 				</div>
 			</div>
-
 			<div class="ncd-dependent" data-sensor-13 data-sensor-10 data-sensor-3>
 				<div class="form-row">
 					<label for="node-input-change_enabled"><i class="icon-tag"></i> Enable Percentage Change Detection</label>
@@ -1430,6 +1434,24 @@
 				</div>
 			</div>
 
+			<div class="ncd-dependent" data-sensor-14 data-sensor-45 data-sensor-48 data-sensor-52>
+				<div class="form-row ncd-active-check">
+					<strong>Sensor Boot Time</strong>
+					<p class="caption">
+						This value represents the number of seconds to wait after applying power to the sensor before taking a reading.
+						Only recommended for sensors powered by the Wireless Sensor's power supply.
+					</p>
+					<div>
+						<label for="node-input-sensor_boot_time_420ma_active">Active:</label>
+						<input type="checkbox" id="node-input-sensor_boot_time_420ma_active" class="ncd-config-toggle" data-target-id="node-input-sensor_boot_time_420ma" value="1">
+					</div>
+					<div>
+						<label for="node-input-sensor_boot_time_420ma"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-sensor_boot_time_420ma" placeholder="0" value="0">
+					</div>
+				</div>
+			</div>
+
 			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-505 data-sensor-506>
 				<div class="form-row ncd-active-check">
 					<strong>Channel 1 Current Calibration Value</strong>
@@ -1516,7 +1538,25 @@
 					</div>
 				</div>
 			</div>
-
+			<div class="ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-519>
+				<hr>
+				<div class="form-row ncd-active-check">
+					<strong>Payload Length</strong>
+					<div>
+						<label for="node-input-payload_length_80_active">Active:</label>
+						<input type="checkbox" id="node-input-payload_length_80_active" class="ncd-config-toggle" data-target-id="node-input-payload_length_80" value="1">
+					</div>
+					<div>
+						<label for="node-input-payload_length_80"><i class="icon-tag"></i>Value:</label>
+						<select id="node-input-payload_length_80">
+							<option value="0">55 Bytes</option>
+							<option value="1">100 Bytes</option>
+							<option value="2">150 Bytes</option>
+							<option selected="selected" value="3">180 Bytes</option>
+						</select>
+					</div>
+				</div>
+			</div>
 			<div class="ncd-dependent" data-sensor-10000 data-sensor-10012>
 				<div class="form-row">
 					<button id="config_sensor">Configure Now</button>

@@ -335,25 +335,15 @@ module.exports = function(RED) {
 						if(config.retries_active){
 							promises.retries = node.config_gateway.config_set_retries(mac, parseInt(config.retries));
 						}
-
 						var change_detection = [13, 10, 3];
 						if(change_detection.indexOf(sensor.type) > -1){
 							promises.change_detection = node.config_gateway.config_set_change_detection(mac, config.change_enabled ? 1 : 0, parseInt(config.change_pr), parseInt(config.change_interval));
 						}
 						switch(sensor.type){
-							case 13:
-								var cali = parseFloat(config.cm_calibration);
-								if(cali == 0) break;
-								promises.calibration = node.config_gateway.config_set_cm_calibration(mac, cali);
-								break;
-							case 24:
-								var interr = parseInt(config.activ_interr_x) | parseInt(config.activ_interr_y) | parseInt(config.activ_interr_z) | parseInt(config.activ_interr_op);
-								promises.activity_interrupt = node.config_gateway.config_set_activ_interr(mac, interr);
-							case 7:
-								promises.acceleration_range = node.config_gateway.config_set_impact_accel(mac, parseInt(config.impact_accel));
-								promises.data_rate = node.config_gateway.config_set_impact_data_rate(mac, parseInt(config.impact_data_rate));
-								promises.impact_threshold = node.config_gateway.config_set_impact_threshold(mac, parseInt(config.impact_threshold));
-								promises.impact_duration = node.config_gateway.config_set_impact_duration(mac, parseInt(config.impact_duration));
+							case 5:
+								promises.acceleration_range = node.config_gateway.config_set_amgt_accel(mac, parseInt(config.amgt_accel));
+								promises.magnetometer_gain = node.config_gateway.config_set_amgt_magnet(mac, parseInt(config.amgt_mag));
+								promises.gyroscope_scale = node.config_gateway.config_set_amgt_gyro(mac, parseInt(config.amgt_gyro));
 								break;
 							case 6:
 								promises.altitude = node.config_gateway.config_set_bp_altitude(mac, parseInt(config.bp_altitude));
@@ -361,11 +351,25 @@ module.exports = function(RED) {
 								promises.temp_precision = node.config_gateway.config_set_bp_temp_precision(mac, parseInt(config.bp_temp_prec));
 								promises.pressure_precision = node.config_gateway.config_set_bp_press_precision(mac, parseInt(config.bp_press_prec));
 								break;
-							case 5:
-								promises.acceleration_range = node.config_gateway.config_set_amgt_accel(mac, parseInt(config.amgt_accel));
-								promises.magnetometer_gain = node.config_gateway.config_set_amgt_magnet(mac, parseInt(config.amgt_mag));
-								promises.gyroscope_scale = node.config_gateway.config_set_amgt_gyro(mac, parseInt(config.amgt_gyro));
+							case 7:
+								promises.acceleration_range = node.config_gateway.config_set_impact_accel(mac, parseInt(config.impact_accel));
+								promises.data_rate = node.config_gateway.config_set_impact_data_rate(mac, parseInt(config.impact_data_rate));
+								promises.impact_threshold = node.config_gateway.config_set_impact_threshold(mac, parseInt(config.impact_threshold));
+								promises.impact_duration = node.config_gateway.config_set_impact_duration(mac, parseInt(config.impact_duration));
 								break;
+							case 13:
+								var cali = parseFloat(config.cm_calibration);
+								if(cali == 0) break;
+								promises.calibration = node.config_gateway.config_set_cm_calibration(mac, cali);
+								break;
+							case 14:
+								if(config.sensor_boot_time_420ma_active){
+									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
+								}
+								break;
+							case 24:
+								var interr = parseInt(config.activ_interr_x) | parseInt(config.activ_interr_y) | parseInt(config.activ_interr_z) | parseInt(config.activ_interr_op);
+								promises.activity_interrupt = node.config_gateway.config_set_activ_interr(mac, interr);
 							case 40:
 								promises.filtering = node.config_gateway.config_set_filtering(mac, parseInt(config.filtering));
 								promises.data_rate = node.config_gateway.config_set_data_rate(mac, parseInt(config.data_rate));
@@ -377,12 +381,27 @@ module.exports = function(RED) {
 									promises.sensor_forced_calibration = node.config_gateway.config_set_sensor_forced_calibration(mac, parseInt(config.force_calibration_co2));
 								}
 								break;
+							case 45:
+								if(config.sensor_boot_time_420ma_active){
+									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
+								}
+								break;
 							case 47:
 								if(config.roll_angle_threshold_47_active){
 									promises.roll_angle_threshold_47 = node.config_gateway.config_set_roll_threshold_47(mac, parseInt(config.roll_angle_threshold_47));
 								}
 								if(config.pitch_angle_threshold_47_active){
 									promises.pitch_angle_threshold_47 = node.config_gateway.config_set_pitch_threshold_47(mac, parseInt(config.pitch_angle_threshold_47));
+								}
+								break;
+							case 48:
+								if(config.sensor_boot_time_420ma_active){
+									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
+								}
+								break;
+							case 52:
+								if(config.sensor_boot_time_420ma_active){
+									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
 								}
 								break;
 							case 80:
@@ -424,6 +443,9 @@ module.exports = function(RED) {
 								}
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
+								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -484,6 +506,9 @@ module.exports = function(RED) {
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
+								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								}
@@ -527,6 +552,9 @@ module.exports = function(RED) {
 								}
 								if(config.deadband_80_active){
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
+								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -580,6 +608,9 @@ module.exports = function(RED) {
 								}
 								if(config.acceleration_interrupt_threshold_84_active){
 									promises.acceleration_interrupt_threshold_84 = node.config_gateway.config_set_acceleration_interrupt_threshold_84(mac, parseInt(config.acceleration_interrupt_threshold_84));
+								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -684,6 +715,9 @@ module.exports = function(RED) {
 								}
 								if(config.acceleration_interrupt_threshold_84_active){
 									promises.acceleration_interrupt_threshold_84 = node.config_gateway.config_set_acceleration_interrupt_threshold_84(mac, parseInt(config.acceleration_interrupt_threshold_84));
+								}
+								if(config.payload_length_80_active){
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
