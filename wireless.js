@@ -77,6 +77,7 @@ module.exports = function(RED) {
 			}).catch((err) => {
 				console.log(err);
 				node.is_config = 2;
+
 				if(cb) cb(node.is_config);
 				return node.is_config;
 			}).then((mode) => {
@@ -370,6 +371,16 @@ module.exports = function(RED) {
 							case 24:
 								var interr = parseInt(config.activ_interr_x) | parseInt(config.activ_interr_y) | parseInt(config.activ_interr_z) | parseInt(config.activ_interr_op);
 								promises.activity_interrupt = node.config_gateway.config_set_activ_interr(mac, interr);
+							case 35:
+								if(config.counter_threshold_35_active){
+									promises.config_set_counter_threshold_35 = node.config_gateway.config_set_counter_threshold_35(mac, parseInt(config.counter_threshold_35));
+								}
+								break;
+							case 36:
+								if(config.counter_threshold_35_active){
+									promises.config_set_counter_threshold_35 = node.config_gateway.config_set_counter_threshold_35(mac, parseInt(config.counter_threshold_35));
+								}
+								break;
 							case 40:
 								promises.filtering = node.config_gateway.config_set_filtering(mac, parseInt(config.filtering));
 								promises.data_rate = node.config_gateway.config_set_data_rate(mac, parseInt(config.data_rate));
@@ -445,7 +456,7 @@ module.exports = function(RED) {
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
 								if(config.payload_length_80_active){
-									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, parseInt(config.payload_length_80));
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -507,7 +518,7 @@ module.exports = function(RED) {
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
 								if(config.payload_length_80_active){
-									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, parseInt(config.payload_length_80));
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -554,7 +565,7 @@ module.exports = function(RED) {
 									promises.deadband = node.config_gateway.config_set_deadband_80(mac, parseInt(config.deadband_80));
 								}
 								if(config.payload_length_80_active){
-									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, parseInt(config.payload_length_80));
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -610,7 +621,7 @@ module.exports = function(RED) {
 									promises.acceleration_interrupt_threshold_84 = node.config_gateway.config_set_acceleration_interrupt_threshold_84(mac, parseInt(config.acceleration_interrupt_threshold_84));
 								}
 								if(config.payload_length_80_active){
-									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, parseInt(config.payload_length_80));
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
@@ -717,7 +728,7 @@ module.exports = function(RED) {
 									promises.acceleration_interrupt_threshold_84 = node.config_gateway.config_set_acceleration_interrupt_threshold_84(mac, parseInt(config.acceleration_interrupt_threshold_84));
 								}
 								if(config.payload_length_80_active){
-									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, config.payload_length_80);
+									promises.payload_length_80 = node.config_gateway.config_set_payload_length_80(mac, parseInt(config.payload_length_80));
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
