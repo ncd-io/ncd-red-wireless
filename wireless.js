@@ -9,7 +9,6 @@ module.exports = function(RED) {
 	function NcdGatewayConfig(config){
 		RED.nodes.createNode(this,config);
 
-
 		this.port = config.comm_type == 'serial' ? config.port : config.tcp_port;
 		this.baudRate = parseInt(config.baudRate);
 
@@ -341,6 +340,17 @@ module.exports = function(RED) {
 							promises.change_detection = node.config_gateway.config_set_change_detection(mac, config.change_enabled ? 1 : 0, parseInt(config.change_pr), parseInt(config.change_interval));
 						}
 						switch(sensor.type){
+							case 3:
+								if(config.low_calibration_420ma_active){
+									promises.low_calibration_420ma = node.config_gateway.config_set_low_calibration_420ma(mac, parseInt(config.low_calibration_420ma));
+								}
+								if(config.mid_calibration_420ma_active){
+									promises.mid_calibration_420ma = node.config_gateway.config_set_mid_calibration_420ma(mac, parseInt(config.mid_calibration_420ma));
+								}
+								if(config.high_calibration_420ma_active){
+									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
+								}
+								break;
 							case 5:
 								promises.acceleration_range = node.config_gateway.config_set_amgt_accel(mac, parseInt(config.amgt_accel));
 								promises.magnetometer_gain = node.config_gateway.config_set_amgt_magnet(mac, parseInt(config.amgt_mag));
@@ -366,6 +376,15 @@ module.exports = function(RED) {
 							case 14:
 								if(config.sensor_boot_time_420ma_active){
 									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
+								}
+								if(config.low_calibration_420ma_active){
+									promises.low_calibration_420ma = node.config_gateway.config_set_low_calibration_420ma(mac, parseInt(config.low_calibration_420ma));
+								}
+								if(config.mid_calibration_420ma_active){
+									promises.mid_calibration_420ma = node.config_gateway.config_set_mid_calibration_420ma(mac, parseInt(config.mid_calibration_420ma));
+								}
+								if(config.high_calibration_420ma_active){
+									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
 								}
 								break;
 							case 24:
@@ -396,6 +415,15 @@ module.exports = function(RED) {
 								if(config.sensor_boot_time_420ma_active){
 									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
 								}
+								if(config.low_calibration_420ma_active){
+									promises.low_calibration_420ma = node.config_gateway.config_set_low_calibration_420ma(mac, parseInt(config.low_calibration_420ma));
+								}
+								if(config.mid_calibration_420ma_active){
+									promises.mid_calibration_420ma = node.config_gateway.config_set_mid_calibration_420ma(mac, parseInt(config.mid_calibration_420ma));
+								}
+								if(config.high_calibration_420ma_active){
+									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
+								}
 								break;
 							case 46:
 								if(config.motion_threshold_46_active){
@@ -414,10 +442,28 @@ module.exports = function(RED) {
 								if(config.sensor_boot_time_420ma_active){
 									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
 								}
+								if(config.low_calibration_420ma_active){
+									promises.low_calibration_420ma = node.config_gateway.config_set_low_calibration_420ma(mac, parseInt(config.low_calibration_420ma));
+								}
+								if(config.mid_calibration_420ma_active){
+									promises.mid_calibration_420ma = node.config_gateway.config_set_mid_calibration_420ma(mac, parseInt(config.mid_calibration_420ma));
+								}
+								if(config.high_calibration_420ma_active){
+									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
+								}
 								break;
 							case 52:
 								if(config.sensor_boot_time_420ma_active){
 									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
+								}
+								if(config.low_calibration_420ma_active){
+									promises.low_calibration_420ma = node.config_gateway.config_set_low_calibration_420ma(mac, parseInt(config.low_calibration_420ma));
+								}
+								if(config.mid_calibration_420ma_active){
+									promises.mid_calibration_420ma = node.config_gateway.config_set_mid_calibration_420ma(mac, parseInt(config.mid_calibration_420ma));
+								}
+								if(config.high_calibration_420ma_active){
+									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
 								}
 								break;
 							case 80:
@@ -632,6 +678,20 @@ module.exports = function(RED) {
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
 								}
 								break;
+							case 89:
+								if(config.sensor_boot_time_420ma_active){
+									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
+								}
+								if(config.low_calibration_420ma_active){
+									promises.low_calibration_420ma = node.config_gateway.config_set_low_calibration_420ma(mac, parseInt(config.low_calibration_420ma));
+								}
+								if(config.mid_calibration_420ma_active){
+									promises.mid_calibration_420ma = node.config_gateway.config_set_mid_calibration_420ma(mac, parseInt(config.mid_calibration_420ma));
+								}
+								if(config.high_calibration_420ma_active){
+									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
+								}
+								break;
 							case 101:
 								if(config.output_data_rate_101_m2_active){
 									promises.output_data_rate_101_m2 = node.config_gateway.config_set_output_data_rate_101(mac, parseInt(config.output_data_rate_101_m2));
@@ -666,6 +726,17 @@ module.exports = function(RED) {
 								// 	promises.full_scale_range_101 = node.config_gateway.config_set_full_scale_range_101(mac, parseInt(config.full_scale_range_101));
 								// }
 								// promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								break;
+							case 200:
+								if(config.low_calibration_420ma_active){
+									promises.low_calibration_420ma = node.config_gateway.config_set_low_calibration_420ma(mac, parseInt(config.low_calibration_420ma));
+								}
+								if(config.mid_calibration_420ma_active){
+									promises.mid_calibration_420ma = node.config_gateway.config_set_mid_calibration_420ma(mac, parseInt(config.mid_calibration_420ma));
+								}
+								if(config.high_calibration_420ma_active){
+									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
+								}
 								break;
 							case 505:
 								if(config.current_calibration_c1_80_active){
@@ -861,7 +932,6 @@ module.exports = function(RED) {
 						}, 100);
 					}
 				}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
-					// MARK TODO broadcast - insert timing
 					if(config.sensor_type == 101 || config.sensor_type == 102){
 						if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){
 							this.gateway.fly_101_in_progress = true;
@@ -980,7 +1050,6 @@ module.exports = function(RED) {
 							}, 100);
 						}
 					}else if(config.auto_config && config.on_the_fly_enable && sensor.mode == "OTN"){
-						// MARK TODO broadcast - insert timing
 
 						if(config.sensor_type == 101 || config.sensor_type == 102){
 							if(this.gateway.hasOwnProperty('fly_101_in_progress') && this.gateway.fly_101_in_progress == false || !this.gateway.hasOwnProperty('fly_101_in_progress')){

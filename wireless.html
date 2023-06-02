@@ -65,63 +65,63 @@
 </script>
 
 <style>
-    .ncd-active-check strong{
-        width: 100%;
-    }
-    .form-row.ncd-active-check{
-        margin: 12px 0px;
-        border: 1px solid #eee;
-        padding: 12px;
-        border-radius: 8px;
-    }
-    .form-row.ncd-active-check > div{
-        padding: 4px;
-    }
-    .form-row.ncd-active-check > div > input[type='checkbox']{
-        width: inherit;
-    }
-    .form-row .caption{
-        font-size: .95em;
+	.ncd-active-check strong{
+		width: 100%;
+	}
+	.form-row.ncd-active-check{
+		margin: 12px 0px;
+		border: 1px solid #eee;
+		padding: 12px;
+		border-radius: 8px;
+	}
+	.form-row.ncd-active-check > div{
+		padding: 4px;
+	}
+	.form-row.ncd-active-check > div > input[type='checkbox']{
+		width: inherit;
+	}
+	.form-row .caption{
+		font-size: .95em;
 		padding-left: 1em;
 		margin-top: .25em;
-    }
+	}
 </style>
 
 <script type="text/x-red" data-help-name="ncd-gateway-node">
-    <h3>Gateway Node</h3>
+	<h3>Gateway Node</h3>
 	<p>This node is primarily useful for debugging and configuring sensors. This node is equipped with a button on the flow that switches the modem between configuration and listening mode.</p>
 	<h3>Output</h3>
 	<p>Any time sensor data is received from any sensor on the network, this node will output a message containing all pertinant information as in the example below.</p>
-  <h3>Input</h3>
-  <p>The Input connection to this Gateway node allows for sending data to devices.  The input connection expects the payload to be an object containging an address and data variable.  Address is a string representation of the destination device.  Data is a byte array of data to be transmitted as payload to that device.  Example "payload":{"address":"00:13:A2:00:01:02:03:04",data:[254,108,1]}</p>
-  <pre>
-  msg = {
-    topic: "sensor_data",
-    payload: {
-      nodeId: 0,
-      firmware: 3,
-      battery: 3.2940600000000004,
-      counter: 37,
-      sensor_type: 1,
-      sensor_data: {
-        humidity: 45.51,
-        temperature: 23.91,
-      },
-      type: "sensor_data",
-      addr: "00:13:a2:00:41:07:18:81",
-      original: {
-        mac: "00:13:a2:00:41:07:18:81",
-        receive_options: {
-          ack: 0,
-          broadcast: 0,
-          type: ""
-        }
-      },
-      data: [127,0,3,3,255,37,0,1,0,17,199,9,87],
-      type: "receive_packet"
-    },
-    _msgid: "391caba.5a19454"
-  }
+	<h3>Input</h3>
+	<p>The Input connection to this Gateway node allows for sending data to devices.  The input connection expects the payload to be an object containging an address and data variable.  Address is a string representation of the destination device.  Data is a byte array of data to be transmitted as payload to that device.  Example "payload":{"address":"00:13:A2:00:01:02:03:04",data:[254,108,1]}</p>
+	<pre>
+		msg = {
+			topic: "sensor_data",
+			payload: {
+				nodeId: 0,
+				firmware: 3,
+				battery: 3.2940600000000004,
+				counter: 37,
+				sensor_type: 1,
+				sensor_data: {
+					humidity: 45.51,
+					temperature: 23.91,
+				},
+				type: "sensor_data",
+				addr: "00:13:a2:00:41:07:18:81",
+				original: {
+					mac: "00:13:a2:00:41:07:18:81",
+					receive_options: {
+						ack: 0,
+						broadcast: 0,
+						type: ""
+					}
+				},
+				data: [127,0,3,3,255,37,0,1,0,17,199,9,87],
+				type: "receive_packet"
+			},
+			_msgid: "391caba.5a19454"
+		}
 	</pre>
 </script>
 
@@ -323,6 +323,13 @@
 
 			motion_threshold_46_active:{value:""},
 			motion_threshold_46:{value: 100, validate: NCD_validators.number_range(0, 4294967295)},
+
+			low_calibration_420ma_active:{value:""},
+			low_calibration_420ma:{value: 68805, validate: NCD_validators.number_range(0, 4294967295)},
+			mid_calibration_420ma_active:{value:""},
+			mid_calibration_420ma:{value: 68724, validate: NCD_validators.number_range(0, 4294967295)},
+			high_calibration_420ma_active:{value:""},
+			high_calibration_420ma:{value: 68714, validate: NCD_validators.number_range(0, 4294967295)},
 		},
 		inputs: 0,
 		outputs: 1,
@@ -331,95 +338,97 @@
 			if(this.addr) return this.addr.split(":").slice(4).join(':');
 			if(this.sensor_type){
 				var types = {
-					"1": "Temperature/Humidity",
-					"2": "2ch Push Notification/Voltage Detection",
-					"3": "ADC/4-20 mA/DC Voltage",
-					"4": "Thermocouple",
-					"5": "Gyro/Magneto/Temperature",
-					"6": "Temperature/Barometeric Pressure",
-					"7": "Impact Detection",
-					"8": "Vibration",
-					"9": "Proximity and Light",
-					"10": "Light",
-					"12": "3 Channel Thermocouple",
-					"13": "Current Monitor",
-					"14": "1 Channel 4-20mA Receiver",
-					"15": "1 Channel 0-10V Receiver",
-					"16": "1 Channel Soil Moisture Sensor",
-					"17": "1 Channel AC Voltage Sensor",
-					"18": "Pulse Frequency",
-					"19": "2 Channel Current Sensor",
-					"20": "High Precision Pressure Sensor",
-					"21": "Differential Bi directional Pressure Sensor",
-					"22": "0-24V AC/DC Optically Isolated Inputs",
-					"23": "2 Channel Thermocouple Sensor",
-					"24": "Activity Detection",
-					"25": "Asset Monitor",
-					"26": "Pressure Sensor",
-					"27": "Environmental Sensor",
-					"28": "3 Channel Current Sensor",
-					"29": "Linear Displacement Sensor",
-					"30": "Structural Monitoring Sensor",
-					"31": "Air Quality TVOC eCO2 Temperature and Humidity Sensor",
-					"32": "Particulate Matter Sensor",
-					"33": "AC Current Detect Sensor",
-					"34": "Tank Level Sensor",
-					"35": "1 Channel Counter",
-					"36": "2 Channel Counter",
-					"37": "7 Channel Push Notification",
-					"39": "3 Wire RTD Temperature Sensor",
-					"40": "Enterprise Vibration Sensor",
-					"41": "RPM Proximity Sensor",
-					"42": "0-24VDC Voltage Monitor",
-					"43": "Dual Temperature Humidity Current Detection Sensor",
-					"44": "CO2 Gas Sensor",
-					"45": "4-20mA 16-Bit Input Transmitter",
-					"46": "Motion Detection Sensor",
-					"47": "Wireless Tilt Sensor",
-					"48": "4-20mA 16-Bit Input Transmitter",
-					"49": "6 Channel Thermocouple Sensor",
-					"50": "Predictive Maintenance Sensor",
-					"51": "6 Channel Current Sensor",
-					"52": "2 Channel 4-20mA Receiver",
-					"53": "Air Quality CO2 and PM Sensor",
-					"54": "3 Channel RTD",
-					"56": "2 Channel 0-10VDC Receiver",
-					"60": "Air Velocity, Pressure, & Temperature Sensor",
-					"61": "pH Temperature Sensor",
-					"62": "ORP Temperature Sensor",
-					"63": "pH and ORPTemperature Sensor",
-					"64": "EC Salinity TDS and Temperature Sensor",
-					"65": "DO and Temperature Sensor",
-					"66": "DO EC Salinity TDS and Temperature Sensor",
-					"67": "PAR Sensor",
-					"69": "Soil Moisture Temperature and EC Sensor",
-//					"70": "2 Channel Soil Moisture Temperature and EC Sensor",
-					"71": "3 Channel Soil Moisture Temperature and EC Sensor",
-					"72": "SDI Soil Moisture Temperature Moisture Probe",
-					"75": "Siemens Air Velocity Probe",
-					"76": "Wireless CO Gas Sensor",
-					"77": "3 Channel SDI Soil Moisture Temperature Moisture Probe",
-					"79": "Oil Analysis Sensor",
-					"80": "One Channel Vibration Plus",
-					"81": "Two Channel Vibration Plus",
-					"82": "Condition Based/Predictive Maintenance Sensor",
-					"84": "Type 84 - Standalone Smart Vibration Sensor",
-					"101": "Pro Vibration",
-					"102": "Strain Gauge",
-					"200": "4-20mA Pass Through",
-					"202": "Weather Station",
-					"502": "C_50-27",
-					"505": "Custom_SAP_Current_1C",
-					"506": "Custom_SAP_Current_3C",
-					"507": "Custom_SAP_Current_7C",
-					"510": "GreenLight",
-					"515": "Custom_SAP_Current_48C",
-					"519": "Type 519: Custom Vibration 1",
-					"520": "Type 520: Custom 6 Channel Current Temperature & Humidity",
-					"10000": "4-Channel Relay",
-					"10006": "4-Channel 4-20 mA Input",
-					"10007": "4-Channel Current Monitor",
-					"10012": "2-Relay + 2-Input",
+					"1": "1 - Temperature/Humidity",
+					"2": "2 - 2ch Push Notification/Voltage Detection",
+					"3": "3 - ADC/4-20 mA/DC Voltage",
+					"4": "4 - Thermocouple",
+					"5": "5 - Gyro/Magneto/Temperature",
+					"6": "6 - Temperature/Barometeric Pressure",
+					"7": "7 - Impact Detection",
+					"8": "8 - Vibration",
+					"9": "9 - Proximity and Light",
+					"10": "10 - Light",
+					"12": "12 - 3 Channel Thermocouple",
+					"13": "13 - Current Monitor",
+					"14": "14 - 1 Channel 4-20mA Receiver",
+					"15": "15 - 1 Channel 0-10V Receiver",
+					"16": "16 - 1 Channel Soil Moisture Sensor",
+					"17": "17 - 1 Channel AC Voltage Sensor",
+					"18": "18 - Pulse Frequency",
+					"19": "19 - 2 Channel Current Sensor",
+					"20": "20 - High Precision Pressure Sensor",
+					"21": "21 - Differential Bi directional Pressure Sensor",
+					"22": "22 - 0-24V AC/DC Optically Isolated Inputs",
+					"23": "23 - 2 Channel Thermocouple Sensor",
+					"24": "24 - Activity Detection",
+					"25": "25 - Asset Monitor",
+					"26": "26 - Pressure Sensor",
+					"27": "27 - Environmental Sensor",
+					"28": "28 - 3 Channel Current Sensor",
+					"29": "29 - Linear Displacement Sensor",
+					"30": "30 - Structural Monitoring Sensor",
+					"31": "31 - Air Quality TVOC eCO2 Temperature and Humidity Sensor",
+					"32": "32 - Particulate Matter Sensor",
+					"33": "33 - AC Current Detect Sensor",
+					"34": "34 - Tank Level Sensor",
+					"35": "35 - 1 Channel Counter",
+					"36": "36 - 2 Channel Counter",
+					"37": "37 - 7 Channel Push Notification",
+					"39": "39 - 3 Wire RTD Temperature Sensor",
+					"40": "40 - Enterprise Vibration Sensor",
+					"41": "41 - RPM Proximity Sensor",
+					"42": "42 - 0-24VDC Voltage Monitor",
+					"43": "43 - Dual Temperature Humidity Current Detection Sensor",
+					"44": "44 - CO2 Gas Sensor",
+					"45": "45 - 4-20mA 16-Bit Input Transmitter",
+					"46": "46 - Motion Detection Sensor",
+					"47": "47 - Wireless Tilt Sensor",
+					"48": "48 - 4-20mA 16-Bit Input Transmitter",
+					"49": "49 - 6 Channel Thermocouple Sensor",
+					"50": "50 - Predictive Maintenance Sensor",
+					"51": "51 - 6 Channel Current Sensor",
+					"52": "52 - 2 Channel 4-20mA Receiver",
+					"53": "53 - Air Quality CO2 and PM Sensor",
+					"54": "54 - 3 Channel RTD",
+					"56": "56 - 2 Channel 0-10VDC Receiver",
+					"60": "60 - Air Velocity, Pressure, & Temperature Sensor",
+					"61": "61 - pH Temperature Sensor",
+					"62": "62 - ORP Temperature Sensor",
+					"63": "63 - pH and ORPTemperature Sensor",
+					"64": "64 - EC Salinity TDS and Temperature Sensor",
+					"65": "65 - DO and Temperature Sensor",
+					"66": "66 - DO EC Salinity TDS and Temperature Sensor",
+					"67": "67 - PAR Sensor",
+					"69": "69 - Soil Moisture Temperature and EC Sensor",
+//					"70": "70 - 2 Channel Soil Moisture Temperature and EC Sensor",
+					"71": "71 - 3 Channel Soil Moisture Temperature and EC Sensor",
+					"72": "72 - SDI Soil Moisture Temperature Moisture Probe",
+					"75": "75 - Siemens Air Velocity Probe",
+					"76": "76 - Wireless CO Gas Sensor",
+					"77": "77 - 3 Channel SDI Soil Moisture Temperature Moisture Probe",
+					"79": "79 - Oil Analysis Sensor",
+					"80": "80 - One Channel Vibration Plus",
+					"81": "81 - Two Channel Vibration Plus",
+					"82": "82 - Condition Based/Predictive Maintenance Sensor",
+					"84": "84 - Standalone Smart Vibration Sensor",
+					"89": "89 - 2 Channel Ultrasound Vibration Sensor",
+					"92": "92 - Sound Sensor",
+					"101": "101 - Pro Vibration",
+					"102": "102 - Strain Gauge",
+					"200": "200 - 4-20mA Pass Through",
+					"202": "202 - Weather Station",
+					"502": "502 - C_50-27",
+					"505": "505 - Custom_SAP_Current_1C",
+					"506": "506 - Custom_SAP_Current_3C",
+					"507": "507 - Custom_SAP_Current_7C",
+					"510": "510 - GreenLight",
+					"515": "515 - Custom_SAP_Current_48C",
+					"519": "519: Custom Vibration 1",
+					"520": "520: Custom 6 Channel Current Temperature & Humidity",
+					"10000": "10000 - 4-Channel Relay",
+					"10006": "10006 - 4-Channel 4-20 mA Input",
+					"10007": "10007 - 4-Channel Current Monitor",
+					"10012": "10012 - 2-Relay + 2-Input",
 				}
 				return types[this.sensor_type];
 			}
@@ -517,10 +526,10 @@
 			$('.ncd-config-toggle').each(function(){
 				var handleClick = function(){
 					// if($(this).prop('checked') && $(this).data('target-id')) {
-					//     $('#'+$(this).data('target-id')).prop('disabled', false);
+					//	 $('#'+$(this).data('target-id')).prop('disabled', false);
 					// }
 					// else{
-					//     $('#'+$(this).data('target-id')).prop('disabled', true);
+					//	 $('#'+$(this).data('target-id')).prop('disabled', true);
 					// }
 
 					if($(this).prop('checked')){
@@ -568,97 +577,99 @@
 	<div class="form-row">
 		<label for="node-input-sensor_type"><i class="icon-tag"></i> Sensor Type</label>
 		<select id="node-input-sensor_type">
-			<option value="1">Temperature and Humidity</option>
-			<option value="2">2ch Push Notification/Voltage Detection</option>
-			<option value="3">ADC/4-20 mA/DC Voltage</option>
-			<option value="4">Thermocouple</option>
-			<option value="5">Accel, Gyro, Magneto and Temperature</option>
-			<option value="6">Temperature and Barometeric Pressure</option>
-			<option value="7">Impact Detection</option>
-			<option value="8">Vibration</option>
-			<option value="9">Proximity</option>
-			<option value="10">Light</option>
-			<option value="12">3-channel Thermocouple</option>
-			<option value="13">Current Monitor</option>
-			<option value="14">10-Bit 1-Channel 4-20mA</option>
-			<option value="15">10-Bit 1-Channel ADC</option>
-			<option value="16">Soil Moisture Sensor</option>
-			<option value="17">24-Bit AC Voltage Monitor</option>
-			<option value="18">Pulse/Frequency</option>
-			<option value="19">2-channel 24-bit Current Monitor</option>
-			<option value="20">Precision Pressure & Temperature (pA)</option>
-			<option value="21">AMS Pressure & Temperature</option>
-			<option value="22">0-24V AC/DC Optically Isolated Inputs</option>
-			<option value="23">2-channel Thermocouple</option>
-			<option value="24">Activity Detection</option>
-			<option value="25">Asset Monitor</option>
-			<option value="26">Pressure & Temperature (PSI)</option>
-			<option value="27">Environmental</option>
-			<option value="28">3-Channel Current Monitor</option>
-			<option value="29">Linear Displacement Sensor</option>
-			<option value="30">Structural Monitoring Sensor</option>
-			<option value="31">Air Quality TVOC eCO2 Temperature and Humidity Sensor</option>
-			<option value="32">Particulate Matter Sensor</option>
-			<option value="33">AC Current Detect Sensor</option>
-			<option value="34">Wireless Tank Level</option>
-			<option value="35">One Channel Counter</option>
-			<option value="36">Two Channel Counter</option>
-			<option value="37">7 Channel Push Notification</option>
-			<option value="39">RTD Temperature Sensor</option>
-			<option value="40">Vibration w/Time Domain (partial support)</option>
-			<option value="41">RPM Proximity Sensor</option>
-			<option value="42">0-24VDC Voltage Monitor</option>
-			<option value="43">Dual Temperature Humidity Current Detection Sensor</option>
-			<option value="44">Wireless CO2 Gas Sensor</option>
-			<option value="45">4-20mA 16-Bit Input Transmitter</option>
-			<option value="46">Motion Detection Sensor</option>
-			<option value="47">Type 47: Tilt Sensor</option>
-			<option value="48">4-20mA 16-Bit Input Transmitter</option>
-			<option value="49">6 Channel Thermocouple Sensor</option>
-			<option value="50">Predictive Maintenance Sensor</option>
-			<option value="51">6 Channel Current Sensor</option>
-			<option value="52">2 Channel 4-20mA Receiver</option>
-			<option value="53">Air Quality CO2 and PM Sensor</option>
-			<option value="54">3 Channel RTD</option>
-			<option value="56">2 Channel 0-10VDC Receiver</option>
-			<option value="60">Air Velocity and Precision Pressure & Temperature Sensor</option>
-			<option value="61">pH Temperature Sensor</option>
-			<option value="62">ORP Temperature Sensor</option>
-			<option value="63">pH and ORPTemperature Sensor</option>
-			<option value="64">EC Salinity TDS and Temperature Sensor</option>
-			<option value="65">DO and Temperature Sensor</option>
-			<option value="66">DO EC Salinity TDS and Temperature Sensor</option>
-			<option value="67">PAR Sensor</option>
-			<option value="69">Soil Moisture Temperature and EC Sensor</option>
+			<option value="1">1 - Temperature and Humidity</option>
+			<option value="2">2 - 2ch Push Notification/Voltage Detection</option>
+			<option value="3">3 - ADC/4-20 mA/DC Voltage</option>
+			<option value="4">4 - Thermocouple</option>
+			<option value="5">5 - Accel, Gyro, Magneto and Temperature</option>
+			<option value="6">6 - Temperature and Barometeric Pressure</option>
+			<option value="7">7 - Impact Detection</option>
+			<option value="8">8 - Vibration</option>
+			<option value="9">9 - Proximity</option>
+			<option value="10">10 - Light</option>
+			<option value="12">12 - 3-channel Thermocouple</option>
+			<option value="13">13 - Current Monitor</option>
+			<option value="14">14 - 10-Bit 1-Channel 4-20mA</option>
+			<option value="15">15 - 10-Bit 1-Channel ADC</option>
+			<option value="16">16 - Soil Moisture Sensor</option>
+			<option value="17">17 - 24-Bit AC Voltage Monitor</option>
+			<option value="18">18 - Pulse/Frequency</option>
+			<option value="19">19 - 2-channel 24-bit Current Monitor</option>
+			<option value="20">20 - Precision Pressure & Temperature (pA)</option>
+			<option value="21">21 - AMS Pressure & Temperature</option>
+			<option value="22">22 - 0-24V AC/DC Optically Isolated Inputs</option>
+			<option value="23">23 - 2-channel Thermocouple</option>
+			<option value="24">24 - Activity Detection</option>
+			<option value="25">25 - Asset Monitor</option>
+			<option value="26">26 - Pressure & Temperature (PSI)</option>
+			<option value="27">27 - Environmental</option>
+			<option value="28">28 - 3-Channel Current Monitor</option>
+			<option value="29">29 - Linear Displacement Sensor</option>
+			<option value="30">30 - Structural Monitoring Sensor</option>
+			<option value="31">31 - Air Quality TVOC eCO2 Temperature and Humidity Sensor</option>
+			<option value="32">32 - Particulate Matter Sensor</option>
+			<option value="33">33 - AC Current Detect Sensor</option>
+			<option value="34">34 - Wireless Tank Level</option>
+			<option value="35">35 - One Channel Counter</option>
+			<option value="36">36 - Two Channel Counter</option>
+			<option value="37">37 - 7 Channel Push Notification</option>
+			<option value="39">39 - RTD Temperature Sensor</option>
+			<option value="40">40 - Vibration w/Time Domain (partial support)</option>
+			<option value="41">41 - RPM Proximity Sensor</option>
+			<option value="42">42 - 0-24VDC Voltage Monitor</option>
+			<option value="43">43 - Dual Temperature Humidity Current Detection Sensor</option>
+			<option value="44">44 - Wireless CO2 Gas Sensor</option>
+			<option value="45">45 - 4-20mA 16-Bit Input Transmitter</option>
+			<option value="46">46 - Motion Detection Sensor</option>
+			<option value="47">47 - Type 47: Tilt Sensor</option>
+			<option value="48">48 - 4-20mA 16-Bit Input Transmitter</option>
+			<option value="49">49 - 6 Channel Thermocouple Sensor</option>
+			<option value="50">50 - Predictive Maintenance Sensor</option>
+			<option value="51">51 - 6 Channel Current Sensor</option>
+			<option value="52">52 - 2 Channel 4-20mA Receiver</option>
+			<option value="53">53 - Air Quality CO2 and PM Sensor</option>
+			<option value="54">54 - 3 Channel RTD</option>
+			<option value="56">56 - 2 Channel 0-10VDC Receiver</option>
+			<option value="60">60 - Air Velocity and Precision Pressure & Temperature Sensor</option>
+			<option value="61">61 - pH Temperature Sensor</option>
+			<option value="62">62 - ORP Temperature Sensor</option>
+			<option value="63">63 - pH and ORPTemperature Sensor</option>
+			<option value="64">64 - EC Salinity TDS and Temperature Sensor</option>
+			<option value="65">65 - DO and Temperature Sensor</option>
+			<option value="66">66 - DO EC Salinity TDS and Temperature Sensor</option>
+			<option value="67">67 - PAR Sensor</option>
+			<option value="69">69 - Soil Moisture Temperature and EC Sensor</option>
 <!--
-			<option value="70">2 Channel Soil Moisture Temperature and EC Sensor</option>
+			<option value="70">70 - 2 Channel Soil Moisture Temperature and EC Sensor</option>
 -->
-			<option value="71">3 Channel Soil Moisture Temperature and EC Sensor</option>
-			<option value="72">SDI-12 Wireless</option>
-			<option value="75">Siemens Air Velocity Probe</option>
-			<option value="76">Wireless CO Gas Sensor</option>
-			<option value="77">3 Channel SDI Soil Moisture Temperature Moisture Probe</option>
-			<option value="79">Oil Analysis Sensor</option>
-			<option value="80">One Channel Vibration Plus</option>
-			<option value="81">Two Channel Vibration Plus</option>
-			<option value="82">Condition Based/Predictive Maintenance Sensor</option>
-			<option value="84">Type 84 - Standalone Smart Vibration Sensor</option>
-			<option value="101">Pro Vibration</option>
-			<option value="102">Strain Gauge</option>
-			<option value="200">4-20mA Pass Through</option>
-			<option value="202">Weather Station</option>
-			<option value="502">C_50-27</option>
-			<option value="505">Custom_SAP_Current_1C</option>
-			<option value="506">Custom_SAP_Current_3C</option>
-			<option value="507">Custom_SAP_Current_7C</option>
-			<option value="510">GreenLight</option>
-			<option value="515">Custom_SAP_Current_48C</option>
-			<option value="519">Type 519: Custom Vibration 1</option>
-			<option value="520">Type 520: Custom 6 Channel Current Temperature & Humidity</option>
-			<option value="10000">4-Channel Relay</option>
-			<option value="10006">4-Channel 4-20 mA Input</option>
-			<option value="10007">4-Channel Current Monitor</option>
-			<option value="10012">2-Relay + 2-Input</option>
+			<option value="71">71 - 3 Channel Soil Moisture Temperature and EC Sensor</option>
+			<option value="72">72 - SDI-12 Wireless</option>
+			<option value="75">75 - Siemens Air Velocity Probe</option>
+			<option value="76">76 - Wireless CO Gas Sensor</option>
+			<option value="77">77 - 3 Channel SDI Soil Moisture Temperature Moisture Probe</option>
+			<option value="79">79 - Oil Analysis Sensor</option>
+			<option value="80">80 - One Channel Vibration Plus</option>
+			<option value="81">81 - Two Channel Vibration Plus</option>
+			<option value="82">82 - Condition Based/Predictive Maintenance Sensor</option>
+			<option value="84">84 - Standalone Smart Vibration Sensor</option>
+			<option value="89">89 - 2 Channel Ultrasound Vibration Sensor</option>
+			<option value="92">92 - Sound Sensor</option>
+			<option value="101">101 - Pro Vibration</option>
+			<option value="102">102 - Strain Gauge</option>
+			<option value="200">200 - 4-20mA Pass Through</option>
+			<option value="202">202 - Weather Station</option>
+			<option value="502">502 - C_50-27</option>
+			<option value="505">505 - Custom_SAP_Current_1C</option>
+			<option value="506">506 - Custom_SAP_Current_3C</option>
+			<option value="507">507 - Custom_SAP_Current_7C</option>
+			<option value="510">510 - GreenLight</option>
+			<option value="515">515 - Custom_SAP_Current_48C</option>
+			<option value="519">519 - Type 519: Custom Vibration 1</option>
+			<option value="520">520 - Type 520: Custom 6 Channel Current Temperature & Humidity</option>
+			<option value="10000">10000 - 4-Channel Relay</option>
+			<option value="10006">10006 - 4-Channel 4-20 mA Input</option>
+			<option value="10007">10007 - 4-Channel Current Monitor</option>
+			<option value="10012">10012 - 2-Relay + 2-Input</option>
 		</select>
 	</div>
 	<div class="section">
@@ -668,7 +679,7 @@
 				<label for="node-input-auto_config"><i class="icon-tag"></i> Auto Config</label>
 				<input class="section-control" type="checkbox" id="node-input-auto_config" value="1">
 			</div>
-			<div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-101 data-sensor-102 data-sensor-519 data-sensor-520>
+			<div class="form-row ncd-dependent" data-sensor-80 data-sensor-81 data-sensor-82 data-sensor-84 data-sensor-89 data-sensor-101 data-sensor-102 data-sensor-519 data-sensor-520>
 				<hr>
 				<label for="node-input-on_the_fly_enable"><i class="icon-tag"></i> OTF Config*</label>
 				<input type="checkbox" id="node-input-on_the_fly_enable" value="1">
@@ -909,7 +920,7 @@
 					</select>
 				</div>
 			</div>
-            <div class="ncd-dependent" data-sensor-40>
+			<div class="ncd-dependent" data-sensor-40>
 				<div class="form-row">
 					<label for="node-input-filtering"><i class="icon-tag"></i> Data Filtering</label>
 					<select id="node-input-filtering">
@@ -1440,7 +1451,7 @@
 				</div>
 			</div>
 
-			<div class="ncd-dependent" data-sensor-14 data-sensor-45 data-sensor-48 data-sensor-52>
+			<div class="ncd-dependent" data-sensor-14 data-sensor-45 data-sensor-48 data-sensor-52 data-sensor-89>
 				<div class="form-row ncd-active-check">
 					<strong>Sensor Boot Time</strong>
 					<p class="caption">
@@ -1454,6 +1465,42 @@
 					<div>
 						<label for="node-input-sensor_boot_time_420ma"><i class="icon-tag"></i>Value:</label>
 						<input type="text" id="node-input-sensor_boot_time_420ma" placeholder="0" value="0">
+					</div>
+				</div>
+			</div>
+
+			<div class="ncd-dependent" data-sensor-3 data-sensor-14 data-sensor-45 data-sensor-48 data-sensor-52 data-sensor-89 data-sensor-200>
+				<div class="form-row ncd-active-check">
+					<strong>Low Calibration Point</strong>
+					<div>
+						<label for="node-input-low_calibration_420ma_active">Active:</label>
+						<input type="checkbox" id="node-input-low_calibration_420ma_active" class="ncd-config-toggle" data-target-id="node-input-low_calibration_420ma" value="1">
+					</div>
+					<div>
+						<label for="node-input-low_calibration_420ma"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-low_calibration_420ma" placeholder="68805" value="68805">
+					</div>
+				</div>
+				<div class="form-row ncd-active-check">
+					<strong>Mid Calibration Point</strong>
+					<div>
+						<label for="node-input-mid_calibration_420ma_active">Active:</label>
+						<input type="checkbox" id="node-input-mid_calibration_420ma_active" class="ncd-config-toggle" data-target-id="node-input-mid_calibration_420ma" value="1">
+					</div>
+					<div>
+						<label for="node-input-mid_calibration_420ma"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-mid_calibration_420ma" placeholder="68724" value="68724">
+					</div>
+				</div>
+				<div class="form-row ncd-active-check">
+					<strong>High Calibration Point</strong>
+					<div>
+						<label for="node-input-high_calibration_420ma_active">Active:</label>
+						<input type="checkbox" id="node-input-high_calibration_420ma_active" class="ncd-config-toggle" data-target-id="node-input-high_calibration_420ma" value="1">
+					</div>
+					<div>
+						<label for="node-input-high_calibration_420ma"><i class="icon-tag"></i>Value:</label>
+						<input type="text" id="node-input-high_calibration_420ma" placeholder="68714" value="68714">
 					</div>
 				</div>
 			</div>
@@ -1602,7 +1649,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="ncd-wireless-node">
-    <h3>Wireless Node</h3>
+	<h3>Wireless Node</h3>
 	<p>This node is used to filter sensor data coming from a modem. It can filter by mac address, or sensor type, and can be used to configure wireless devices automatically when they enter configuration mode.</p>
 	<h4>Serial Devices</h4>
 	<p>The Serial Device field refers to the modem that will be recieving the packets from the device. The Serial Device for Config field refers to a modem that is always set to the config network ID (0x7BCD), this is the recommended setup as it allows you to configure nodes without missing potentially important sensor data, however, the config button on the Wireless Gateway node may be used if a single modem will be acting as both the listener, and config endpoints, making the second selection optional.</p>
@@ -1615,37 +1662,37 @@
 	<h4>Output</h4>
 	<p>This node will output detailed information about incoming sensor data, and the device identity and status including. The payload will contain an object containing sensor data, an example can be seen below:</p>
 	<pre>
-  msg = {
-    topic: "sensor_data",
-	payload: {
-      humidity: 45.51,
-      temperature: 23.91,
-	}
-    data: {
-      nodeId: 0,
-      firmware: 3,
-      battery: 3.2940600000000004,
-      counter: 37,
-      sensor_type: 1,
-      sensor_data: {
-        humidity: 45.51,
-        temperature: 23.91,
-      },
-      type: "sensor_data",
-      addr: "00:13:a2:00:41:07:18:81",
-      original: {
-        mac: "00:13:a2:00:41:07:18:81",
-        receive_options: {
-          ack: 0,
-          broadcast: 0,
-          type: ""
-        }
-      },
-      data: [127,0,3,3,255,37,0,1,0,17,199,9,87],
-      type: "receive_packet"
-    },
-    _msgid: "391caba.5a19454"
-  }
+		msg = {
+			topic: "sensor_data",
+			payload: {
+				humidity: 45.51,
+				temperature: 23.91,
+			}
+			data: {
+				nodeId: 0,
+				firmware: 3,
+				battery: 3.2940600000000004,
+				counter: 37,
+				sensor_type: 1,
+				sensor_data: {
+					humidity: 45.51,
+					temperature: 23.91,
+				},
+				type: "sensor_data",
+				addr: "00:13:a2:00:41:07:18:81",
+				original: {
+					mac: "00:13:a2:00:41:07:18:81",
+					receive_options: {
+						ack: 0,
+						broadcast: 0,
+						type: ""
+					}
+				},
+				data: [127,0,3,3,255,37,0,1,0,17,199,9,87],
+				type: "receive_packet"
+			},
+			_msgid: "391caba.5a19454"
+		}
 	</pre>
 </script>
 
