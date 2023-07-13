@@ -363,10 +363,22 @@ module.exports = function(RED) {
 								promises.pressure_precision = node.config_gateway.config_set_bp_press_precision(mac, parseInt(config.bp_press_prec));
 								break;
 							case 7:
-								promises.acceleration_range = node.config_gateway.config_set_impact_accel(mac, parseInt(config.impact_accel));
-								promises.data_rate = node.config_gateway.config_set_impact_data_rate(mac, parseInt(config.impact_data_rate));
-								promises.impact_threshold = node.config_gateway.config_set_impact_threshold(mac, parseInt(config.impact_threshold));
-								promises.impact_duration = node.config_gateway.config_set_impact_duration(mac, parseInt(config.impact_duration));
+								if(config.impact_accel_active){
+									promises.impact_accel = node.config_gateway.config_set_acceleration_range_24(mac, parseInt(config.impact_accel));
+								}
+								if(config.impact_data_rate_active){
+									promises.impact_data_rate = node.config_gateway.config_set_data_rate_24(mac, parseInt(config.impact_data_rate));
+								}
+								if(config.impact_threshold_active){
+									promises.impact_threshold = node.config_gateway.config_set_threshold_24(mac, parseInt(config.impact_threshold));
+								}
+								if(config.impact_duration_active){
+									promises.impact_duration = node.config_gateway.config_set_duration_24(mac, parseInt(config.impact_duration));
+								}
+								// promises.acceleration_range = node.config_gateway.config_set_impact_accel(mac, parseInt(config.impact_accel));
+								// promises.data_rate = node.config_gateway.config_set_impact_data_rate(mac, parseInt(config.impact_data_rate));
+								// promises.impact_threshold = node.config_gateway.config_set_impact_threshold(mac, parseInt(config.impact_threshold));
+								// promises.impact_duration = node.config_gateway.config_set_impact_duration(mac, parseInt(config.impact_duration));
 								break;
 							case 13:
 								var cali = parseFloat(config.cm_calibration);
@@ -388,8 +400,20 @@ module.exports = function(RED) {
 								}
 								break;
 							case 24:
+								if(config.impact_accel_active){
+									promises.impact_accel = node.config_gateway.config_set_acceleration_range_24(mac, parseInt(config.impact_accel));
+								}
+								if(config.impact_data_rate_active){
+									promises.impact_data_rate = node.config_gateway.config_set_data_rate_24(mac, parseInt(config.impact_data_rate));
+								}
+								if(config.impact_threshold_active){
+									promises.impact_threshold = node.config_gateway.config_set_threshold_24(mac, parseInt(config.impact_threshold));
+								}
+								if(config.impact_duration_active){
+									promises.impact_duration = node.config_gateway.config_set_duration_24(mac, parseInt(config.impact_duration));
+								}
 								var interr = parseInt(config.activ_interr_x) | parseInt(config.activ_interr_y) | parseInt(config.activ_interr_z) | parseInt(config.activ_interr_op);
-								promises.activity_interrupt = node.config_gateway.config_set_activ_interr(mac, interr);
+								promises.activity_interrupt = node.config_gateway.config_set_interrupt_24(mac, interr);
 							case 35:
 								if(config.counter_threshold_35_active){
 									promises.config_set_counter_threshold_35 = node.config_gateway.config_set_counter_threshold_35(mac, parseInt(config.counter_threshold_35));
@@ -466,6 +490,14 @@ module.exports = function(RED) {
 									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
 								}
 								break;
+							case 78:
+								if(config.sensor_boot_time_78_active){
+									promises.sensor_boot_time_78 = node.config_gateway.config_set_sensor_boot_time_78(mac, parseInt(config.sensor_boot_time_78));
+								}
+							case 79:
+								if(config.sensor_boot_time_78_active){
+									promises.sensor_boot_time_78 = node.config_gateway.config_set_sensor_boot_time_78(mac, parseInt(config.sensor_boot_time_78));
+								}
 							case 80:
 								if(config.current_calibration_c1_80_active){
 									promises.current_calibration_c1_80 = node.config_gateway.config_set_current_calibration_individual_80(mac, parseInt(config.current_calibration_c1_80), 1);
@@ -676,6 +708,20 @@ module.exports = function(RED) {
 								}
 								if(config.set_rtc_101){
 									promises.set_rtc_101 = node.config_gateway.config_set_rtc_101(mac);
+								}
+								break;
+							case 88:
+								if(config.sensor_boot_time_420ma_active){
+									promises.sensor_boot_time_420ma = node.config_gateway.config_set_sensor_boot_time_420ma(mac, parseInt(config.sensor_boot_time_420ma));
+								}
+								if(config.low_calibration_420ma_active){
+									promises.low_calibration_420ma = node.config_gateway.config_set_low_calibration_420ma(mac, parseInt(config.low_calibration_420ma));
+								}
+								if(config.mid_calibration_420ma_active){
+									promises.mid_calibration_420ma = node.config_gateway.config_set_mid_calibration_420ma(mac, parseInt(config.mid_calibration_420ma));
+								}
+								if(config.high_calibration_420ma_active){
+									promises.high_calibration_420ma = node.config_gateway.config_set_high_calibration_420ma(mac, parseInt(config.high_calibration_420ma));
 								}
 								break;
 							case 89:
